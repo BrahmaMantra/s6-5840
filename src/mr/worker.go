@@ -105,7 +105,7 @@ func (w *Worker_) start() {
 		if err != nil && err.Error() != "all tasks are done" {
 			break
 		}
-		switch w.task.Metadata.State {
+		switch int32(w.task.Metadata.State) {
 		case MAP:
 			w.doMap()
 		case REDUCE:
@@ -200,23 +200,6 @@ func (w *Worker_) doReduce() {
 		return intermediate[i].Key < intermediate[j].Key
 	})
 
-	// if w.task.Metadata.TaskId == -7 {
-	// 	// 创建临时文件
-	// 	tempFile, err := os.Create(fmt.Sprintf("mr-temp-task-%d", -w.task.Metadata.TaskId))
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	// 将 intermediate 写入临时文件
-	// 	encoder := json.NewEncoder(tempFile)
-	// 	for _, kv := range intermediate {
-	// 		err := encoder.Encode(&kv)
-	// 		if err != nil {
-	// 			log.Fatal(err)
-	// 		}
-	// 	}
-	// 	defer tempFile.Close()
-	// } // 确保在不需要时删除文件
-
 	// 写到中间文件
 	oname := fmt.Sprintf("mr-out-%d", w.task.Metadata.TaskId)
 	ofile, err := os.Create(oname)
@@ -251,7 +234,7 @@ func (w *Worker_) getOneTask() error {
 
 	res := call("Coordinator.AskTask", &args, &reply)
 	if !res {
-		fmt.Println("getOneTask(): RPC 调用失败")
+		// fmt.Println("getOneTask(): RPC 调用失败")
 		return fmt.Errorf("RPC 调用失败: %v", res)
 	}
 	if reply.NReduce == 0 {
@@ -260,7 +243,7 @@ func (w *Worker_) getOneTask() error {
 	} else if reply.NReduce == -1 {
 		return fmt.Errorf("all tasks are done")
 	} else {
-		fmt.Println("getOneTask():worker_id is ", reply.WorkerId, "task_id is ", reply.Task.Metadata.TaskId)
+		// fmt.Println("getOneTask():worker_id is ", reply.WorkerId, "task_id is ", reply.Task.Metadata.TaskId)
 		w.task = reply.Task
 		w.id = reply.WorkerId
 		w.nReduce = reply.NReduce

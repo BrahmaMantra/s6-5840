@@ -8,13 +8,14 @@ import (
 	"net/rpc"
 	"os"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 type State int
 
 const (
-	WAIT State = iota
+	WAIT int32 = iota
 	MAP
 	SHUFFLE
 	REDUCE
@@ -24,7 +25,7 @@ const (
 // Your lab 1 definitions here.
 type Coordinator struct {
 	inputFiles []string
-	state      State
+	state      atomic.Int32
 	mMap       int
 	nReduce    int
 	//worked_id,work_id,
@@ -98,9 +99,10 @@ func (c *Coordinator) Done() bool {
 	ret := false
 
 	// Your code here.
-	for c.state != DONE {
+	for c.state.Load() != DONE {
 		time.Sleep(1 * time.Second)
 	}
+
 	ret = true
 	return ret
 }
@@ -112,7 +114,7 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 	mMap := len(files)
 	c := Coordinator{
 		inputFiles:         files,
-		state:              WAIT,
+		state:              atomic.Int32{}, //WAIT
 		mMap:               mMap,
 		nReduce:            nReduce,
 		tasksCh_sendClosed: make(chan struct{}, 1),
@@ -150,7 +152,7 @@ func (c *Coordinator) createMapTask() {
 			Metadata: TaskMeta{
 				TaskId:   i,
 				Filename: filename,
-				State:    MAP,
+				State:    State(MAP),
 			},
 			Status: Idle,
 		}
@@ -179,7 +181,7 @@ func (c *Coordinator) createReduceTask() {
 			Metadata: TaskMeta{
 				TaskId:   (-i) - 1,
 				Filename: "",
-				State:    REDUCE,
+				State:    State(REDUCE),
 			},
 			Status: Idle,
 		}
@@ -200,7 +202,7 @@ func (c *Coordinator) reduceTaskBegin() {
 }
 
 func (c *Coordinator) run() {
-	c.state = MAP
+	c.state.Store(MAP)
 	for {
 		c.mu.Lock()
 		select {
@@ -231,14 +233,8 @@ func (c *Coordinator) AskTask(args *AskTaskArgs, reply *AskTaskReply) error {
 	return nil
 }
 func (c *Coordinator) doAskTask(stru *AskTaskStruct) {
-	if c.state == DONE {
-		stru.Reply.Task = Task{}
-		stru.Reply.NReduce = -1
-		stru.Ok <- struct{}{}
-		return
-	}
 	// 不在MAP或REDUCE状态，或者任务已经分完了
-	if !(c.state == MAP || c.state == REDUCE) || len(c.tasksCh) == 0 {
+	if !(c.state.Load() == MAP || c.state.Load() == REDUCE) || len(c.tasksCh) == 0 {
 		time.Sleep(500 * time.Microsecond)
 		stru.Ok <- struct{}{}
 		return
@@ -259,7 +255,7 @@ func (c *Coordinator) doAskTask(stru *AskTaskStruct) {
 		return
 	}
 	task.Metadata.StartWorkTime = time.Now()
-	task.Metadata.State = c.state
+	task.Metadata.State = State(c.state.Load())
 	task.Status = Inprogress
 
 	//Coordinator为其分配工号
@@ -319,9 +315,9 @@ func (c *Coordinator) doFinishTask(stru *FinishTaskStruct) {
 		// fmt.Printf("doFinishTask(): all tasks are done\n")
 		if len(c.workerId_task) == 0 {
 			<-c.tasksCh_sendClosed
-			c.state += 1 //切换到下一个状态
-			// fmt.Println("doFinishTask(): c.state ", c.state)
-			switch c.state {
+			c.state.Add(1) //切换到下一个状态
+			// fmt.Println("doFinishTask(): c.state ", c.state.Load())
+			switch c.state.Load() {
 			case SHUFFLE:
 				c.map2ReduceCh <- true
 				// fmt.Println("doFinishTask(): map2ReduceCh")
@@ -360,7 +356,7 @@ func (c *Coordinator) catchTimeout() {
 	}
 }
 func (c *Coordinator) map2Reduce() {
-	if c.state != SHUFFLE {
+	if c.state.Load() != SHUFFLE {
 		log.Fatal("map2Reduce(): state is not INTERMIDIATE")
 	}
 	c.workerId_task = make(map[int]*Task)
@@ -371,7 +367,7 @@ func (c *Coordinator) map2Reduce() {
 	}
 	c.createReduceTask()
 	// 切换成reduce状态
-	c.state = REDUCE
+	c.state.Store(REDUCE)
 }
 func (c *Coordinator) doEnd() {
 
