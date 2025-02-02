@@ -7,15 +7,19 @@ type PutAppendArgs struct {
 	// You'll have to add definitions here.
 	// Field names must start with capital letters,
 	// otherwise RPC will break.
+	ClerkId int64
+	Count   int64
 }
 
 type PutAppendReply struct {
-	Value string
+	Value    string
+	Vaild_op bool
 }
 
 type GetArgs struct {
 	Key string
 	// You'll have to add definitions here.
+	ClerkId int64
 }
 
 type GetReply struct {

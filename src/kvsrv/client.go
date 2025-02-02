@@ -1,17 +1,23 @@
 package kvsrv
 
-import "6.5840/labrpc"
-import "crypto/rand"
-import "math/big"
+import (
+	"crypto/rand"
+	"math/big"
+	"sync"
 
+	"6.5840/labrpc"
+)
 
 type Clerk struct {
 	server *labrpc.ClientEnd
 	// You will have to modify this struct.
+	clerkId int64
+	count   int
+	mu      sync.Mutex
 }
 
 func nrand() int64 {
-	max := big.NewInt(int64(1) << 62)
+	max := big.NewInt(int64(1) << 60)
 	bigx, _ := rand.Int(rand.Reader, max)
 	x := bigx.Int64()
 	return x
@@ -19,8 +25,10 @@ func nrand() int64 {
 
 func MakeClerk(server *labrpc.ClientEnd) *Clerk {
 	ck := new(Clerk)
-	ck.server = server
 	// You'll have to add code here.
+	ck.server = server
+	ck.clerkId = nrand()
+	ck.count = 0
 	return ck
 }
 
@@ -37,7 +45,18 @@ func MakeClerk(server *labrpc.ClientEnd) *Clerk {
 func (ck *Clerk) Get(key string) string {
 
 	// You will have to modify this function.
-	return ""
+	ck.mu.Lock()
+	defer ck.mu.Unlock()
+	args := GetArgs{Key: key, ClerkId: ck.clerkId}
+	reply := GetReply{}
+	ok := ck.server.Call("KVServer.Get", &args, &reply)
+	for !ok {
+		ok = ck.server.Call("KVServer.Get", &args, &reply)
+		// fmt.Println("Get failed with ok = nil")
+	}
+
+	// fmt.Printf("Get()::key = %s , value = %s\n", key, reply.Value)
+	return reply.Value
 }
 
 // shared by Put and Append.
@@ -50,7 +69,22 @@ func (ck *Clerk) Get(key string) string {
 // arguments. and reply must be passed as a pointer.
 func (ck *Clerk) PutAppend(key string, value string, op string) string {
 	// You will have to modify this function.
-	return ""
+	ck.mu.Lock()
+	defer ck.mu.Unlock()
+	defer func() { ck.count++ }()
+	// fmt.Printf("ck.count = %d , key = %s , value = %s\n", ck.count, key, value)
+	args := PutAppendArgs{Key: key, Value: value, ClerkId: ck.clerkId, Count: int64(ck.count)}
+	reply := PutAppendReply{}
+	ok := ck.server.Call("KVServer."+op, &args, &reply)
+	for !ok {
+		ok = ck.server.Call("KVServer."+op, &args, &reply)
+		// fmt.Println("PutAppend failed with ok = nil")
+	}
+	if reply.Vaild_op {
+		// fmt.Printf("reply.Valid with ck.count = %d\n\n", ck.count)
+		// ck.count++
+	}
+	return reply.Value
 }
 
 func (ck *Clerk) Put(key string, value string) {
