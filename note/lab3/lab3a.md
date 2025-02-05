@@ -1,5 +1,7 @@
 先想一下，需要做的东西有哪些。根据hints来看的话，暂时有初始化操作、定时选举、投票、leader发送心跳（AppendEntries）
 
+心跳就是一种特殊的AppendEntries, 其特殊在Entries长度为0,
+
 2025.1.27 - 2025.2.01
 ## 测试
 - go test -run 3A

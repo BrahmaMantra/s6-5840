@@ -1,0 +1,999 @@
+=== RUN   TestPersist13C
+Test (3C): basic persistence ...
+2025/02/05 19:57:45 server 2 (term is 1)vote for server0(term is 1)
+2025/02/05 19:57:45 server 1 (term is 1)vote for server0(term is 1)
+2025/02/05 19:57:45 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:57:45 Server 0 become leader,term = 1
+2025/02/05 19:57:45 Server 0 become leader,args.Term = 1
+2025/02/05 19:57:45 server 2 is supporting server 0 , now voteCount = 3
+2025/02/05 19:57:45 Server 0 become leader,term = 1
+2025/02/05 19:57:45 Server 0 become leader,args.Term = 1
+2025/02/05 19:57:45 Server 0 append command {1 11}
+2025/02/05 19:57:45 server的term为1, leader的term为1
+2025/02/05 19:57:45 server 2 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:45 server 2 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:45 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server的term为1, leader的term为1
+2025/02/05 19:57:45 server 1 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:45 server 1 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:45 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server 1 (term is 2)vote for server2(term is 2)
+2025/02/05 19:57:45 server 1 is supporting server 2 , now voteCount = 2
+2025/02/05 19:57:45 Server 2 become leader,term = 2
+2025/02/05 19:57:45 Server 2 become leader,args.Term = 2
+2025/02/05 19:57:45 server 0 (term is 2)vote for server2(term is 2)
+2025/02/05 19:57:45 server 0 is supporting server 2 , now voteCount = 3
+2025/02/05 19:57:45 Server 2 become leader,term = 2
+2025/02/05 19:57:45 Server 2 become leader,args.Term = 2
+2025/02/05 19:57:45 Server 2 append command {2 12}
+2025/02/05 19:57:45 server的term为2, leader的term为2
+2025/02/05 19:57:45 server 1 将要append的日志为: [{Term:2 Command:12}]
+2025/02/05 19:57:45 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12}]
+2025/02/05 19:57:45 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server的term为2, leader的term为2
+2025/02/05 19:57:45 server 0 将要append的日志为: [{Term:2 Command:12}]
+2025/02/05 19:57:45 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12}]
+2025/02/05 19:57:45 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:45 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:45 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:45 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:46 server 2 (term is 3)vote for server0(term is 3)
+2025/02/05 19:57:46 server 1 (term is 3)vote for server0(term is 3)
+2025/02/05 19:57:46 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:57:46 Server 0 become leader,term = 3
+2025/02/05 19:57:46 Server 0 become leader,args.Term = 3
+2025/02/05 19:57:46 server 2 is supporting server 0 , now voteCount = 3
+2025/02/05 19:57:46 Server 0 become leader,term = 3
+2025/02/05 19:57:46 Server 0 become leader,args.Term = 3
+2025/02/05 19:57:46 Server 0 append command {3 13}
+2025/02/05 19:57:46 server的term为3, leader的term为3
+2025/02/05 19:57:46 server 2 将要append的日志为: [{Term:3 Command:13}]
+2025/02/05 19:57:46 server 2 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13}]
+2025/02/05 19:57:46 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:46 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:46 server的term为3, leader的term为3
+2025/02/05 19:57:46 server 1 将要append的日志为: [{Term:3 Command:13}]
+2025/02/05 19:57:46 server 1 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13}]
+2025/02/05 19:57:46 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:46 server 2 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:46 server 1 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:47 server 1 (term is 4)vote for server2(term is 4)
+2025/02/05 19:57:47 server 1 is supporting server 2 , now voteCount = 2
+2025/02/05 19:57:47 Server 2 become leader,term = 4
+2025/02/05 19:57:47 Server 2 become leader,args.Term = 4
+2025/02/05 19:57:47 Server 2 append command {4 14}
+2025/02/05 19:57:47 server的term为4, leader的term为4
+2025/02/05 19:57:47 server 1 将要append的日志为: [{Term:4 Command:14}]
+2025/02/05 19:57:47 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13} {Term:4 Command:14}]
+2025/02/05 19:57:47 server 2 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:47 server 1 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:47 server的term为4, leader的term为4
+2025/02/05 19:57:47 server 0 将要append的日志为: [{Term:4 Command:14}]
+2025/02/05 19:57:47 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13} {Term:4 Command:14}]
+2025/02/05 19:57:47 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:47 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:47 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:47 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:47 Server 2 append command {4 15}
+2025/02/05 19:57:47 server的term为4, leader的term为4
+2025/02/05 19:57:47 server 1 将要append的日志为: [{Term:4 Command:15}]
+2025/02/05 19:57:47 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13} {Term:4 Command:14} {Term:4 Command:15}]
+2025/02/05 19:57:47 server 2 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:47 server 1 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:47 Server 2 append command {4 16}
+2025/02/05 19:57:48 server的term为4, leader的term为4
+2025/02/05 19:57:48 server 1 将要append的日志为: [{Term:4 Command:16}]
+2025/02/05 19:57:48 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13} {Term:4 Command:14} {Term:4 Command:15} {Term:4 Command:16}]
+2025/02/05 19:57:48 server 2 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:48 server的term为4, leader的term为4
+2025/02/05 19:57:48 server 0 将要append的日志为: [{Term:4 Command:15} {Term:4 Command:16}]
+2025/02/05 19:57:48 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:2 Command:12} {Term:3 Command:13} {Term:4 Command:14} {Term:4 Command:15} {Term:4 Command:16}]
+2025/02/05 19:57:48 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:48 server 1 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 5 ) 应用到状态机
+  ... Passed --   3.3  3   90   20042    6
+--- PASS: TestPersist13C (3.29s)
+=== RUN   TestPersist23C
+Test (3C): more persistence ...
+2025/02/05 19:57:48 server 4 (term is 1)vote for server1(term is 1)
+2025/02/05 19:57:48 server 4 is supporting server 1 , now voteCount = 2
+2025/02/05 19:57:48 server 2 (term is 1)vote for server1(term is 1)
+2025/02/05 19:57:48 server 2 is supporting server 1 , now voteCount = 3
+2025/02/05 19:57:48 Server 1 become leader,term = 1
+2025/02/05 19:57:48 Server 1 become leader,args.Term = 1
+2025/02/05 19:57:48 server 0 (term is 1)vote for server1(term is 1)
+2025/02/05 19:57:48 server 3 (term is 1)vote for server1(term is 1)
+2025/02/05 19:57:48 server 0 is supporting server 1 , now voteCount = 4
+2025/02/05 19:57:48 Server 1 become leader,term = 1
+2025/02/05 19:57:48 Server 1 become leader,args.Term = 1
+2025/02/05 19:57:48 server 3 is supporting server 1 , now voteCount = 5
+2025/02/05 19:57:48 Server 1 become leader,term = 1
+2025/02/05 19:57:48 Server 1 become leader,args.Term = 1
+2025/02/05 19:57:48 Server 1 append command {1 11}
+2025/02/05 19:57:48 server的term为1, leader的term为1
+2025/02/05 19:57:48 server 4 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:48 server 4 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:48 server的term为1, leader的term为1
+2025/02/05 19:57:48 server 2 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:48 server 2 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:48 server的term为1, leader的term为1
+2025/02/05 19:57:48 server 3 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:48 server 3 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:48 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 server的term为1, leader的term为1
+2025/02/05 19:57:48 server 0 将要append的日志为: [{Term:1 Command:11}]
+2025/02/05 19:57:48 server 0 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11}]
+2025/02/05 19:57:48 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 server 4 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:48 Server 1 append command {1 12}
+2025/02/05 19:57:49 server的term为1, leader的term为1
+2025/02/05 19:57:49 server 4 将要append的日志为: [{Term:1 Command:12}]
+2025/02/05 19:57:49 server的term为1, leader的term为1
+2025/02/05 19:57:49 server 0 将要append的日志为: [{Term:1 Command:12}]
+2025/02/05 19:57:49 server 0 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12}]
+2025/02/05 19:57:49 server 4 成功进行apeend from server 1, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12}]
+2025/02/05 19:57:49 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:49 server 4 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:49 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:49 server 2 (term is 2)vote for server3(term is 2)
+2025/02/05 19:57:49 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:49 server 2 (term is 3)vote for server3(term is 3)
+2025/02/05 19:57:49 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:49 server 2 (term is 4)vote for server3(term is 4)
+2025/02/05 19:57:49 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:50 server 2 (term is 5)vote for server3(term is 5)
+2025/02/05 19:57:50 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:50 server 3 (term is 6)vote for server2(term is 6)
+2025/02/05 19:57:50 server 3 is supporting server 2 , now voteCount = 2
+2025/02/05 19:57:50 server 2 (term is 7)vote for server3(term is 7)
+2025/02/05 19:57:50 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:51 server 2 (term is 8)vote for server3(term is 8)
+2025/02/05 19:57:51 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:51 server 2 (term is 9)vote for server3(term is 9)
+2025/02/05 19:57:51 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:51 server 2 (term is 10)vote for server3(term is 10)
+2025/02/05 19:57:51 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:51 server 2 (term is 11)vote for server3(term is 11)
+2025/02/05 19:57:51 server 2 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:52 server 3 (term is 12)vote for server4(term is 12)
+2025/02/05 19:57:52 server 2 (term is 12)vote for server4(term is 12)
+2025/02/05 19:57:52 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:57:52 server 2 is supporting server 4 , now voteCount = 3
+2025/02/05 19:57:52 Server 4 become leader,term = 12
+2025/02/05 19:57:52 Server 4 become leader,args.Term = 12
+2025/02/05 19:57:52 Server 4 append command {12 13}
+2025/02/05 19:57:52 server 3 的log与args发生冲突, 进行移除
+2025/02/05 19:57:52 server的term为12, leader的term为12
+2025/02/05 19:57:52 server 3 将要append的日志为: [{Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server 2 的log与args发生冲突, 进行移除
+2025/02/05 19:57:52 server的term为12, leader的term为12
+2025/02/05 19:57:52 server 2 将要append的日志为: [{Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server 4 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:52 server 4 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:52 server 4 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:52 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:52 server 3 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:52 server 3 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:52 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:52 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:52 server 2 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:52 Server 1 append command {1 14}
+2025/02/05 19:57:52 RequestVote():Server 1 退位
+2025/02/05 19:57:52 server 1 的log与args发生冲突, 进行移除
+2025/02/05 19:57:52 server的term为12, leader的term为12
+2025/02/05 19:57:52 server 0 将要append的日志为: [{Term:12 Command:13}]
+2025/02/05 19:57:52 server 0 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server的term为12, leader的term为12
+2025/02/05 19:57:52 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:52 server 1 将要append的日志为: [{Term:12 Command:13}]
+2025/02/05 19:57:52 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13}]
+2025/02/05 19:57:52 server 1 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:54 Server 4 append command {12 14}
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 1 将要append的日志为: [{Term:12 Command:14}]
+2025/02/05 19:57:54 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14}]
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 3 将要append的日志为: [{Term:12 Command:14}]
+2025/02/05 19:57:54 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14}]
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 2 将要append的日志为: [{Term:12 Command:14}]
+2025/02/05 19:57:54 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14}]
+2025/02/05 19:57:54 server 4 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 0 将要append的日志为: [{Term:12 Command:14}]
+2025/02/05 19:57:54 server 0 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14}]
+2025/02/05 19:57:54 server 3 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:54 server 2 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:54 server 1 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:54 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:54 Server 4 append command {12 15}
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 3 将要append的日志为: [{Term:12 Command:15}]
+2025/02/05 19:57:54 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15}]
+2025/02/05 19:57:54 server的term为12, leader的term为12
+2025/02/05 19:57:54 server 2 将要append的日志为: [{Term:12 Command:15}]
+2025/02/05 19:57:54 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15}]
+2025/02/05 19:57:54 server 4 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:55 server 3 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:55 server 2 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:55 server 1 (term is 13)vote for server0(term is 13)
+2025/02/05 19:57:55 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:57:55 server 0 (term is 14)vote for server1(term is 14)
+2025/02/05 19:57:55 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:57:55 server 1 (term is 15)vote for server0(term is 15)
+2025/02/05 19:57:55 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:57:56 server 0 (term is 16)vote for server1(term is 16)
+2025/02/05 19:57:56 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:57:56 server 0 (term is 17)vote for server2(term is 17)
+2025/02/05 19:57:56 server 0 is supporting server 2 , now voteCount = 2
+2025/02/05 19:57:56 server 1 (term is 17)vote for server2(term is 17)
+2025/02/05 19:57:56 server 1 is supporting server 2 , now voteCount = 3
+2025/02/05 19:57:56 Server 2 become leader,term = 17
+2025/02/05 19:57:56 Server 2 become leader,args.Term = 17
+2025/02/05 19:57:56 Server 2 append command {17 16}
+2025/02/05 19:57:56 server 0 的log与args发生冲突, 进行移除
+2025/02/05 19:57:56 server的term为17, leader的term为17
+2025/02/05 19:57:56 server 0 将要append的日志为: [{Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16}]
+2025/02/05 19:57:56 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16}]
+2025/02/05 19:57:56 server 1 的log与args发生冲突, 进行移除
+2025/02/05 19:57:56 server的term为17, leader的term为17
+2025/02/05 19:57:56 server 1 将要append的日志为: [{Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16}]
+2025/02/05 19:57:56 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16}]
+2025/02/05 19:57:56 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:56 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:56 server 2 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:56 server 2 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:56 server 2 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:56 server 2 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:56 server 1 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:56 server 0 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:56 Server 2 append command {17 17}
+2025/02/05 19:57:56 sendAppendEntries():Server 4 退位
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 1 将要append的日志为: [{Term:17 Command:17}]
+2025/02/05 19:57:57 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 4 将要append的日志为: [{Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server 4 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 4 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:57 server 3 将要append的日志为: [{Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 0 将要append的日志为: [{Term:17 Command:17}]
+2025/02/05 19:57:57 server 3 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17}]
+2025/02/05 19:57:57 server 2 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:57 server 3 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:57 server 1 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:57 server 4 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:57 server 0 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:57 server 3 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:57 Server 2 append command {17 18}
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 1 将要append的日志为: [{Term:17 Command:18}]
+2025/02/05 19:57:57 server的term为17, leader的term为17
+2025/02/05 19:57:57 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18}]
+2025/02/05 19:57:57 server 0 将要append的日志为: [{Term:17 Command:18}]
+2025/02/05 19:57:57 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18}]
+2025/02/05 19:57:57 server 2 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:57 server 1 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:57 server 0 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:57 server 3 (term is 18)vote for server4(term is 18)
+2025/02/05 19:57:57 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:57:58 server 3 (term is 19)vote for server4(term is 19)
+2025/02/05 19:57:58 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:57:58 server 3 (term is 20)vote for server4(term is 20)
+2025/02/05 19:57:58 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:57:58 server 4 (term is 21)vote for server3(term is 21)
+2025/02/05 19:57:58 server 4 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:59 server 4 (term is 22)vote for server3(term is 22)
+2025/02/05 19:57:59 server 4 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:59 server 4 (term is 23)vote for server3(term is 23)
+2025/02/05 19:57:59 server 4 is supporting server 3 , now voteCount = 2
+2025/02/05 19:57:59 server 4 (term is 24)vote for server0(term is 24)
+2025/02/05 19:57:59 server 3 (term is 24)vote for server0(term is 24)
+2025/02/05 19:57:59 server 4 is supporting server 0 , now voteCount = 2
+2025/02/05 19:57:59 server 3 is supporting server 0 , now voteCount = 3
+2025/02/05 19:57:59 Server 0 become leader,term = 24
+2025/02/05 19:57:59 Server 0 become leader,args.Term = 24
+2025/02/05 19:57:59 Server 0 append command {24 19}
+2025/02/05 19:57:59 server 4 的log与args发生冲突, 进行移除
+2025/02/05 19:57:59 server的term为24, leader的term为24
+2025/02/05 19:57:59 server 4 将要append的日志为: [{Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:57:59 server 4 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:57:59 server 3 的log与args发生冲突, 进行移除
+2025/02/05 19:57:59 server的term为24, leader的term为24
+2025/02/05 19:57:59 server 3 将要append的日志为: [{Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:57:59 server 3 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:57:59 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:59 server 0 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:59 server 4 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:57:59 server 3 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:57:59 Server 2 append command {17 20}
+2025/02/05 19:57:59 sendAppendEntries():Server 2 退位
+2025/02/05 19:58:00 server 1 (term is 25)vote for server4(term is 25)
+2025/02/05 19:58:00 RequestVote():Server 0 退位
+2025/02/05 19:58:00 server 0 (term is 25)vote for server4(term is 25)
+2025/02/05 19:58:00 server 3 (term is 25)vote for server4(term is 25)
+2025/02/05 19:58:00 server 2 (term is 25)vote for server4(term is 25)
+2025/02/05 19:58:00 server 1 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:00 server 0 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:00 Server 4 become leader,term = 25
+2025/02/05 19:58:00 Server 4 become leader,args.Term = 25
+2025/02/05 19:58:00 server 2 is supporting server 4 , now voteCount = 4
+2025/02/05 19:58:00 Server 4 become leader,term = 25
+2025/02/05 19:58:00 Server 4 become leader,args.Term = 25
+2025/02/05 19:58:00 server 3 is supporting server 4 , now voteCount = 5
+2025/02/05 19:58:00 Server 4 become leader,term = 25
+2025/02/05 19:58:00 Server 4 become leader,args.Term = 25
+2025/02/05 19:58:00 server 2 的log与args发生冲突, 进行移除
+2025/02/05 19:58:00 server的term为25, leader的term为25
+2025/02/05 19:58:00 server 2 将要append的日志为: [{Term:24 Command:19}]
+2025/02/05 19:58:00 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:58:00 server的term为25, leader的term为25
+2025/02/05 19:58:00 server 1 将要append的日志为: [{Term:24 Command:19}]
+2025/02/05 19:58:00 server 2 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:00 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19}]
+2025/02/05 19:58:00 server 1 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:01 Server 4 append command {25 20}
+2025/02/05 19:58:01 server的term为25, leader的term为25
+2025/02/05 19:58:01 server 3 将要append的日志为: [{Term:25 Command:20}]
+2025/02/05 19:58:01 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20}]
+2025/02/05 19:58:01 server的term为25, leader的term为25
+2025/02/05 19:58:01 server 2 将要append的日志为: [{Term:25 Command:20}]
+2025/02/05 19:58:01 server的term为25, leader的term为25
+2025/02/05 19:58:01 server 0 将要append的日志为: [{Term:25 Command:20}]
+2025/02/05 19:58:01 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20}]
+2025/02/05 19:58:01 server 0 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20}]
+2025/02/05 19:58:01 server 4 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:01 server的term为25, leader的term为25
+2025/02/05 19:58:01 server 1 将要append的日志为: [{Term:25 Command:20}]
+2025/02/05 19:58:01 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20}]
+2025/02/05 19:58:02 server 3 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:02 server 2 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:02 server 0 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:02 server 1 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:02 Server 4 append command {25 21}
+2025/02/05 19:58:02 server的term为25, leader的term为25
+2025/02/05 19:58:02 server 3 将要append的日志为: [{Term:25 Command:21}]
+2025/02/05 19:58:02 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21}]
+2025/02/05 19:58:02 server的term为25, leader的term为25
+2025/02/05 19:58:02 server 2 将要append的日志为: [{Term:25 Command:21}]
+2025/02/05 19:58:02 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21}]
+2025/02/05 19:58:02 server 4 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:02 server 3 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:02 server 2 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:03 server 1 (term is 26)vote for server0(term is 26)
+2025/02/05 19:58:03 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:03 server 1 (term is 27)vote for server0(term is 27)
+2025/02/05 19:58:03 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:03 server 1 (term is 28)vote for server0(term is 28)
+2025/02/05 19:58:03 server 1 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:03 server 0 (term is 29)vote for server1(term is 29)
+2025/02/05 19:58:03 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:04 server 0 (term is 30)vote for server2(term is 30)
+2025/02/05 19:58:04 server 1 (term is 30)vote for server2(term is 30)
+2025/02/05 19:58:04 server 0 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:04 server 1 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:04 Server 2 become leader,term = 30
+2025/02/05 19:58:04 Server 2 become leader,args.Term = 30
+2025/02/05 19:58:04 Server 2 append command {30 22}
+2025/02/05 19:58:04 server 0 的log与args发生冲突, 进行移除
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 0 将要append的日志为: [{Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22}]
+2025/02/05 19:58:04 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22}]
+2025/02/05 19:58:04 server 1 的log与args发生冲突, 进行移除
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 1 将要append的日志为: [{Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22}]
+2025/02/05 19:58:04 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22}]
+2025/02/05 19:58:04 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:04 server 2 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:04 Server 2 append command {30 23}
+2025/02/05 19:58:04 sendAppendEntries():Server 4 退位
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 4 将要append的日志为: [{Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server 4 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 3 将要append的日志为: [{Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 4 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:04 server 1 将要append的日志为: [{Term:30 Command:23}]
+2025/02/05 19:58:04 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server 3 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server 2 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:04 server的term为30, leader的term为30
+2025/02/05 19:58:04 server 3 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:04 server 0 将要append的日志为: [{Term:30 Command:23}]
+2025/02/05 19:58:04 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23}]
+2025/02/05 19:58:04 server 4 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:04 server 0 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:04 server 3 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:04 server 1 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:05 Server 2 append command {30 24}
+2025/02/05 19:58:05 server的term为30, leader的term为30
+2025/02/05 19:58:05 server 1 将要append的日志为: [{Term:30 Command:24}]
+2025/02/05 19:58:05 server的term为30, leader的term为30
+2025/02/05 19:58:05 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24}]
+2025/02/05 19:58:05 server 0 将要append的日志为: [{Term:30 Command:24}]
+2025/02/05 19:58:05 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24}]
+2025/02/05 19:58:05 server 2 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:05 server 1 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:05 server 0 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:05 server 3 (term is 31)vote for server4(term is 31)
+2025/02/05 19:58:05 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:06 server 3 (term is 32)vote for server4(term is 32)
+2025/02/05 19:58:06 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:06 server 3 (term is 33)vote for server4(term is 33)
+2025/02/05 19:58:06 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:06 server 4 (term is 34)vote for server0(term is 34)
+2025/02/05 19:58:06 server 4 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:07 server 4 (term is 35)vote for server3(term is 35)
+2025/02/05 19:58:07 server 4 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:07 server 4 (term is 36)vote for server0(term is 36)
+2025/02/05 19:58:07 server 3 (term is 36)vote for server0(term is 36)
+2025/02/05 19:58:07 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:07 server 4 is supporting server 0 , now voteCount = 3
+2025/02/05 19:58:07 Server 0 become leader,term = 36
+2025/02/05 19:58:07 Server 0 become leader,args.Term = 36
+2025/02/05 19:58:07 Server 0 append command {36 25}
+2025/02/05 19:58:07 server 4 的log与args发生冲突, 进行移除
+2025/02/05 19:58:07 server的term为36, leader的term为36
+2025/02/05 19:58:07 server 4 将要append的日志为: [{Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:07 server 4 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:07 server 3 的log与args发生冲突, 进行移除
+2025/02/05 19:58:07 server的term为36, leader的term为36
+2025/02/05 19:58:07 server 3 将要append的日志为: [{Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:07 server 3 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:07 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:07 server 0 准备将命令(索引为 14 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:07 server 4 准备将命令(索引为 14 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 4 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 5 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 6 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 7 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 8 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 9 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 10 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 11 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 12 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 13 ) 应用到状态机
+2025/02/05 19:58:07 server 3 准备将命令(索引为 14 ) 应用到状态机
+2025/02/05 19:58:07 Server 2 append command {30 1000}
+2025/02/05 19:58:07 sendAppendEntries():Server 2 退位
+2025/02/05 19:58:07 server 3 (term is 37)vote for server4(term is 37)
+2025/02/05 19:58:07 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:07 server 1 (term is 37)vote for server4(term is 37)
+2025/02/05 19:58:07 server 1 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:07 Server 4 become leader,term = 37
+2025/02/05 19:58:07 Server 4 become leader,args.Term = 37
+2025/02/05 19:58:07 RequestVote():Server 0 退位
+2025/02/05 19:58:07 server 0 (term is 37)vote for server4(term is 37)
+2025/02/05 19:58:07 server 2 (term is 37)vote for server4(term is 37)
+2025/02/05 19:58:07 server 0 is supporting server 4 , now voteCount = 4
+2025/02/05 19:58:07 Server 4 become leader,term = 37
+2025/02/05 19:58:07 Server 4 become leader,args.Term = 37
+2025/02/05 19:58:07 server 2 is supporting server 4 , now voteCount = 5
+2025/02/05 19:58:07 Server 4 become leader,term = 37
+2025/02/05 19:58:07 Server 4 become leader,args.Term = 37
+2025/02/05 19:58:08 server 2 的log与args发生冲突, 进行移除
+2025/02/05 19:58:08 server的term为37, leader的term为37
+2025/02/05 19:58:08 server 2 将要append的日志为: [{Term:36 Command:25}]
+2025/02/05 19:58:08 server的term为37, leader的term为37
+2025/02/05 19:58:08 server 1 将要append的日志为: [{Term:36 Command:25}]
+2025/02/05 19:58:08 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:08 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25}]
+2025/02/05 19:58:08 server 1 准备将命令(索引为 14 ) 应用到状态机
+2025/02/05 19:58:08 server 2 准备将命令(索引为 14 ) 应用到状态机
+2025/02/05 19:58:09 Server 4 append command {37 1000}
+2025/02/05 19:58:09 server的term为37, leader的term为37
+2025/02/05 19:58:09 server 3 将要append的日志为: [{Term:37 Command:1000}]
+2025/02/05 19:58:09 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25} {Term:37 Command:1000}]
+2025/02/05 19:58:09 server的term为37, leader的term为37
+2025/02/05 19:58:09 server 2 将要append的日志为: [{Term:37 Command:1000}]
+2025/02/05 19:58:09 server 2 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25} {Term:37 Command:1000}]
+2025/02/05 19:58:09 server的term为37, leader的term为37
+2025/02/05 19:58:09 server 4 准备将命令(索引为 15 ) 应用到状态机
+2025/02/05 19:58:09 server的term为37, leader的term为37
+2025/02/05 19:58:09 server 0 将要append的日志为: [{Term:37 Command:1000}]
+2025/02/05 19:58:09 server 0 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25} {Term:37 Command:1000}]
+2025/02/05 19:58:09 server 1 将要append的日志为: [{Term:37 Command:1000}]
+2025/02/05 19:58:09 server 1 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:11} {Term:1 Command:12} {Term:12 Command:13} {Term:12 Command:14} {Term:12 Command:15} {Term:17 Command:16} {Term:17 Command:17} {Term:17 Command:18} {Term:24 Command:19} {Term:25 Command:20} {Term:25 Command:21} {Term:30 Command:22} {Term:30 Command:23} {Term:30 Command:24} {Term:36 Command:25} {Term:37 Command:1000}]
+2025/02/05 19:58:09 server 1 准备将命令(索引为 15 ) 应用到状态机
+2025/02/05 19:58:09 server 3 准备将命令(索引为 15 ) 应用到状态机
+2025/02/05 19:58:09 server 0 准备将命令(索引为 15 ) 应用到状态机
+2025/02/05 19:58:09 server 2 准备将命令(索引为 15 ) 应用到状态机
+  ... Passed --  21.6  5 1532  295888   16
+--- PASS: TestPersist23C (21.58s)
+=== RUN   TestPersist33C
+Test (3C): partitioned leader and one follower crash, leader restarts ...
+2025/02/05 19:58:10 server 1 (term is 1)vote for server2(term is 1)
+2025/02/05 19:58:10 server 1 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:10 Server 2 become leader,term = 1
+2025/02/05 19:58:10 Server 2 become leader,args.Term = 1
+2025/02/05 19:58:10 server 0 (term is 1)vote for server2(term is 1)
+2025/02/05 19:58:10 server 0 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:10 Server 2 become leader,term = 1
+2025/02/05 19:58:10 Server 2 become leader,args.Term = 1
+2025/02/05 19:58:10 Server 2 append command {1 101}
+2025/02/05 19:58:10 server的term为1, leader的term为1
+2025/02/05 19:58:10 server 1 将要append的日志为: [{Term:1 Command:101}]
+2025/02/05 19:58:10 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101}]
+2025/02/05 19:58:10 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:10 server的term为1, leader的term为1
+2025/02/05 19:58:10 server 0 将要append的日志为: [{Term:1 Command:101}]
+2025/02/05 19:58:10 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101}]
+2025/02/05 19:58:10 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:10 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:10 Server 2 append command {1 102}
+2025/02/05 19:58:10 server的term为1, leader的term为1
+2025/02/05 19:58:10 server 0 将要append的日志为: [{Term:1 Command:102}]
+2025/02/05 19:58:10 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101} {Term:1 Command:102}]
+2025/02/05 19:58:10 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:10 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:11 server 1 (term is 4)vote for server2(term is 4)
+2025/02/05 19:58:11 server 1 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:11 Server 2 become leader,term = 4
+2025/02/05 19:58:11 Server 2 become leader,args.Term = 4
+2025/02/05 19:58:11 Server 2 append command {4 103}
+2025/02/05 19:58:11 server 1 的log与args发生冲突, 进行移除
+2025/02/05 19:58:11 server的term为4, leader的term为4
+2025/02/05 19:58:11 server 1 将要append的日志为: [{Term:1 Command:101} {Term:1 Command:102} {Term:4 Command:103}]
+2025/02/05 19:58:11 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101} {Term:1 Command:102} {Term:4 Command:103}]
+2025/02/05 19:58:11 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:11 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:11 server 2 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:11 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:11 server 1 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:11 Server 2 append command {4 104}
+2025/02/05 19:58:11 server的term为4, leader的term为4
+2025/02/05 19:58:11 server 0 将要append的日志为: [{Term:4 Command:103} {Term:4 Command:104}]
+2025/02/05 19:58:11 server 0 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101} {Term:1 Command:102} {Term:4 Command:103} {Term:4 Command:104}]
+2025/02/05 19:58:11 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:11 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:11 server 0 准备将命令(索引为 2 ) 应用到状态机
+2025/02/05 19:58:11 server的term为4, leader的term为4
+2025/02/05 19:58:11 server 1 将要append的日志为: [{Term:4 Command:104}]
+2025/02/05 19:58:11 server 1 成功进行apeend from server 2, log: [{Term:-1 Command:<nil>} {Term:1 Command:101} {Term:1 Command:102} {Term:4 Command:103} {Term:4 Command:104}]
+2025/02/05 19:58:11 server 2 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:11 server 1 准备将命令(索引为 3 ) 应用到状态机
+2025/02/05 19:58:11 server 0 准备将命令(索引为 3 ) 应用到状态机
+  ... Passed --   2.2  3   42    9092    4
+--- PASS: TestPersist33C (2.15s)
+=== RUN   TestFigure83C
+Test (3C): Figure 8 ...
+2025/02/05 19:58:12 server 4 (term is 1)vote for server3(term is 1)
+2025/02/05 19:58:12 server 1 (term is 1)vote for server3(term is 1)
+2025/02/05 19:58:12 server 4 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:12 server 1 is supporting server 3 , now voteCount = 3
+2025/02/05 19:58:12 Server 3 become leader,term = 1
+2025/02/05 19:58:12 Server 3 become leader,args.Term = 1
+2025/02/05 19:58:12 server 0 (term is 1)vote for server3(term is 1)
+2025/02/05 19:58:12 server 2 (term is 1)vote for server3(term is 1)
+2025/02/05 19:58:12 server 0 is supporting server 3 , now voteCount = 4
+2025/02/05 19:58:12 Server 3 become leader,term = 1
+2025/02/05 19:58:12 Server 3 become leader,args.Term = 1
+2025/02/05 19:58:12 server 2 is supporting server 3 , now voteCount = 5
+2025/02/05 19:58:12 Server 3 become leader,term = 1
+2025/02/05 19:58:12 Server 3 become leader,args.Term = 1
+2025/02/05 19:58:12 Server 3 append command {1 6180022069083848224}
+2025/02/05 19:58:12 server的term为1, leader的term为1
+2025/02/05 19:58:12 server 4 将要append的日志为: [{Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server 4 成功进行apeend from server 3, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server的term为1, leader的term为1
+2025/02/05 19:58:12 server 2 将要append的日志为: [{Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server 2 成功进行apeend from server 3, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server的term为1, leader的term为1
+2025/02/05 19:58:12 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:12 server 1 将要append的日志为: [{Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server 1 成功进行apeend from server 3, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server的term为1, leader的term为1
+2025/02/05 19:58:12 server 0 将要append的日志为: [{Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 server 0 成功进行apeend from server 3, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224}]
+2025/02/05 19:58:12 Server 3 append command {1 8335878801657388552}
+2025/02/05 19:58:12 server 4 (term is 2)vote for server0(term is 2)
+2025/02/05 19:58:12 server 4 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:12 server 2 (term is 2)vote for server0(term is 2)
+2025/02/05 19:58:12 server 1 (term is 2)vote for server0(term is 2)
+2025/02/05 19:58:12 server 1 is supporting server 0 , now voteCount = 3
+2025/02/05 19:58:12 Server 0 become leader,term = 2
+2025/02/05 19:58:12 Server 0 become leader,args.Term = 2
+2025/02/05 19:58:12 server 2 is supporting server 0 , now voteCount = 4
+2025/02/05 19:58:12 Server 0 become leader,term = 2
+2025/02/05 19:58:12 Server 0 become leader,args.Term = 2
+2025/02/05 19:58:12 Server 0 append command {2 1388514643319657167}
+2025/02/05 19:58:12 server的term为2, leader的term为2
+2025/02/05 19:58:12 server 4 将要append的日志为: [{Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server 4 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224} {Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server的term为2, leader的term为2
+2025/02/05 19:58:12 server 2 将要append的日志为: [{Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server 2 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224} {Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:12 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:12 server的term为2, leader的term为2
+2025/02/05 19:58:12 server 1 将要append的日志为: [{Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server 1 成功进行apeend from server 0, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224} {Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:12 server 4 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:12 server 4 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:12 server 1 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:12 server 1 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:12 server 2 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:12 server 2 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:12 server 4 (term is 3)vote for server1(term is 3)
+2025/02/05 19:58:12 server 4 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:13 server 4 (term is 4)vote for server1(term is 4)
+2025/02/05 19:58:13 server 4 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:13 server 2 (term is 4)vote for server1(term is 4)
+2025/02/05 19:58:13 server 2 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:13 Server 1 become leader,term = 4
+2025/02/05 19:58:13 Server 1 become leader,args.Term = 4
+2025/02/05 19:58:13 Server 1 append command {4 5158212342519651756}
+2025/02/05 19:58:13 server 4 (term is 5)vote for server2(term is 5)
+2025/02/05 19:58:13 server 4 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:14 server 4 (term is 6)vote for server2(term is 6)
+2025/02/05 19:58:14 server 4 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:14 server 0 (term is 6)vote for server2(term is 6)
+2025/02/05 19:58:14 server 0 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:14 Server 2 become leader,term = 6
+2025/02/05 19:58:14 Server 2 become leader,args.Term = 6
+2025/02/05 19:58:14 Server 2 append command {6 3336002951503922446}
+2025/02/05 19:58:14 server 4 (term is 7)vote for server0(term is 7)
+2025/02/05 19:58:14 server 4 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:14 server 4 (term is 8)vote for server0(term is 8)
+2025/02/05 19:58:14 server 4 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:14 server 4 (term is 9)vote for server1(term is 9)
+2025/02/05 19:58:14 server 0 (term is 9)vote for server1(term is 9)
+2025/02/05 19:58:14 server 4 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:14 server 0 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:14 Server 1 become leader,term = 9
+2025/02/05 19:58:14 Server 1 become leader,args.Term = 9
+2025/02/05 19:58:15 Server 1 append command {9 6198517364289444754}
+2025/02/05 19:58:15 server 3 (term is 10)vote for server4(term is 10)
+2025/02/05 19:58:15 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:15 server 0 (term is 10)vote for server4(term is 10)
+2025/02/05 19:58:15 server 0 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:15 Server 4 become leader,term = 10
+2025/02/05 19:58:15 Server 4 become leader,args.Term = 10
+2025/02/05 19:58:15 server 0 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:15 server 0 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:15 server 3 的log与args发生冲突, 进行移除
+2025/02/05 19:58:15 server的term为10, leader的term为10
+2025/02/05 19:58:15 server 3 将要append的日志为: [{Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:15 server 3 成功进行apeend from server 4, log: [{Term:-1 Command:<nil>} {Term:1 Command:6180022069083848224} {Term:2 Command:1388514643319657167}]
+2025/02/05 19:58:15 server 3 准备将命令(索引为 0 ) 应用到状态机
+2025/02/05 19:58:15 server 3 准备将命令(索引为 1 ) 应用到状态机
+2025/02/05 19:58:15 Server 4 append command {10 2690479850314193652}
+2025/02/05 19:58:15 server 3 (term is 11)vote for server0(term is 11)
+2025/02/05 19:58:15 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:16 server 3 (term is 12)vote for server0(term is 12)
+2025/02/05 19:58:16 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:16 server 3 (term is 13)vote for server0(term is 13)
+2025/02/05 19:58:16 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:16 server 3 (term is 14)vote for server2(term is 14)
+2025/02/05 19:58:16 server 3 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:16 server 0 (term is 14)vote for server2(term is 14)
+2025/02/05 19:58:16 server 0 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:16 Server 2 become leader,term = 14
+2025/02/05 19:58:16 Server 2 become leader,args.Term = 14
+2025/02/05 19:58:16 Server 2 append command {14 3215839020749894228}
+2025/02/05 19:58:17 server 3 (term is 15)vote for server0(term is 15)
+2025/02/05 19:58:17 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:17 server 0 (term is 16)vote for server1(term is 16)
+2025/02/05 19:58:17 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:17 server 3 (term is 16)vote for server1(term is 16)
+2025/02/05 19:58:17 server 3 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:17 Server 1 become leader,term = 16
+2025/02/05 19:58:17 Server 1 become leader,args.Term = 16
+2025/02/05 19:58:17 Server 1 append command {16 1300879151882234819}
+2025/02/05 19:58:17 server 0 (term is 17)vote for server1(term is 17)
+2025/02/05 19:58:17 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:17 server 3 (term is 17)vote for server1(term is 17)
+2025/02/05 19:58:17 server 3 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:17 Server 1 become leader,term = 17
+2025/02/05 19:58:17 Server 1 become leader,args.Term = 17
+2025/02/05 19:58:17 Server 1 append command {17 884306450305432939}
+2025/02/05 19:58:18 server 3 (term is 18)vote for server1(term is 18)
+2025/02/05 19:58:18 server 3 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:18 server 0 (term is 18)vote for server1(term is 18)
+2025/02/05 19:58:18 server 0 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:18 Server 1 become leader,term = 18
+2025/02/05 19:58:18 Server 1 become leader,args.Term = 18
+2025/02/05 19:58:18 Server 1 append command {18 5844952003153155507}
+2025/02/05 19:58:18 server 0 (term is 19)vote for server1(term is 19)
+2025/02/05 19:58:18 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:18 server 3 (term is 19)vote for server1(term is 19)
+2025/02/05 19:58:18 server 3 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:18 Server 1 become leader,term = 19
+2025/02/05 19:58:18 Server 1 become leader,args.Term = 19
+2025/02/05 19:58:18 Server 1 append command {19 222665796553786287}
+2025/02/05 19:58:18 server 3 (term is 20)vote for server1(term is 20)
+2025/02/05 19:58:18 server 3 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:18 server 0 (term is 20)vote for server1(term is 20)
+2025/02/05 19:58:18 server 0 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:18 Server 1 become leader,term = 20
+2025/02/05 19:58:18 Server 1 become leader,args.Term = 20
+2025/02/05 19:58:19 Server 1 append command {20 3129184566074336243}
+2025/02/05 19:58:19 server 0 (term is 21)vote for server3(term is 21)
+2025/02/05 19:58:19 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:19 server 0 (term is 22)vote for server3(term is 22)
+2025/02/05 19:58:19 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:19 server 0 (term is 23)vote for server3(term is 23)
+2025/02/05 19:58:19 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:20 server 0 (term is 24)vote for server3(term is 24)
+2025/02/05 19:58:20 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:20 server 0 (term is 25)vote for server3(term is 25)
+2025/02/05 19:58:20 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:20 server 3 (term is 26)vote for server0(term is 26)
+2025/02/05 19:58:20 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:21 server 3 (term is 27)vote for server4(term is 27)
+2025/02/05 19:58:21 server 0 (term is 27)vote for server4(term is 27)
+2025/02/05 19:58:21 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:21 server 0 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:21 Server 4 become leader,term = 27
+2025/02/05 19:58:21 Server 4 become leader,args.Term = 27
+2025/02/05 19:58:21 Server 4 append command {27 5761032911106274719}
+2025/02/05 19:58:21 server 0 (term is 28)vote for server4(term is 28)
+2025/02/05 19:58:21 server 3 (term is 28)vote for server4(term is 28)
+2025/02/05 19:58:21 server 0 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:21 server 3 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:21 Server 4 become leader,term = 28
+2025/02/05 19:58:21 Server 4 become leader,args.Term = 28
+2025/02/05 19:58:21 Server 4 append command {28 2186261944684507748}
+2025/02/05 19:58:21 server 3 (term is 29)vote for server0(term is 29)
+2025/02/05 19:58:21 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:21 server 3 (term is 30)vote for server0(term is 30)
+2025/02/05 19:58:21 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:22 server 3 (term is 31)vote for server0(term is 31)
+2025/02/05 19:58:22 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:22 server 3 (term is 32)vote for server0(term is 32)
+2025/02/05 19:58:22 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:22 server 3 (term is 33)vote for server0(term is 33)
+2025/02/05 19:58:22 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:22 server 0 (term is 34)vote for server2(term is 34)
+2025/02/05 19:58:22 server 0 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:22 server 3 (term is 34)vote for server2(term is 34)
+2025/02/05 19:58:22 server 3 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:22 Server 2 become leader,term = 34
+2025/02/05 19:58:22 Server 2 become leader,args.Term = 34
+2025/02/05 19:58:23 Server 2 append command {34 3354739529783101605}
+2025/02/05 19:58:23 server 3 (term is 35)vote for server0(term is 35)
+2025/02/05 19:58:23 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:23 server 3 (term is 36)vote for server0(term is 36)
+2025/02/05 19:58:23 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:24 server 0 (term is 37)vote for server3(term is 37)
+2025/02/05 19:58:24 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:24 server 0 (term is 38)vote for server3(term is 38)
+2025/02/05 19:58:24 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:24 server 3 (term is 39)vote for server0(term is 39)
+2025/02/05 19:58:24 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:24 server 3 (term is 40)vote for server0(term is 40)
+2025/02/05 19:58:24 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:25 server 3 (term is 41)vote for server0(term is 41)
+2025/02/05 19:58:25 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:25 server 3 (term is 42)vote for server4(term is 42)
+2025/02/05 19:58:25 server 0 (term is 42)vote for server4(term is 42)
+2025/02/05 19:58:25 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:25 server 0 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:25 Server 4 become leader,term = 42
+2025/02/05 19:58:25 Server 4 become leader,args.Term = 42
+2025/02/05 19:58:25 Server 4 append command {42 503022558987662486}
+2025/02/05 19:58:25 server 3 (term is 43)vote for server0(term is 43)
+2025/02/05 19:58:25 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:25 server 0 (term is 44)vote for server3(term is 44)
+2025/02/05 19:58:25 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:26 server 0 (term is 45)vote for server2(term is 45)
+2025/02/05 19:58:26 server 3 (term is 45)vote for server2(term is 45)
+2025/02/05 19:58:26 server 0 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:26 server 3 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:26 Server 2 become leader,term = 45
+2025/02/05 19:58:26 Server 2 become leader,args.Term = 45
+2025/02/05 19:58:26 Server 2 append command {45 1666859980165754256}
+2025/02/05 19:58:26 server 0 (term is 46)vote for server3(term is 46)
+2025/02/05 19:58:26 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:26 server 0 (term is 47)vote for server3(term is 47)
+2025/02/05 19:58:26 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:27 server 0 (term is 48)vote for server3(term is 48)
+2025/02/05 19:58:27 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:27 server 3 (term is 49)vote for server0(term is 49)
+2025/02/05 19:58:27 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:27 server 0 (term is 50)vote for server3(term is 50)
+2025/02/05 19:58:27 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:28 server 0 (term is 51)vote for server3(term is 51)
+2025/02/05 19:58:28 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:28 server 3 (term is 52)vote for server0(term is 52)
+2025/02/05 19:58:28 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:28 server 3 (term is 53)vote for server4(term is 53)
+2025/02/05 19:58:28 server 0 (term is 53)vote for server4(term is 53)
+2025/02/05 19:58:28 server 3 is supporting server 4 , now voteCount = 2
+2025/02/05 19:58:28 server 0 is supporting server 4 , now voteCount = 3
+2025/02/05 19:58:28 Server 4 become leader,term = 53
+2025/02/05 19:58:28 Server 4 become leader,args.Term = 53
+2025/02/05 19:58:28 Server 4 append command {53 7711539249335649801}
+2025/02/05 19:58:29 server 0 (term is 54)vote for server3(term is 54)
+2025/02/05 19:58:29 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:29 server 3 (term is 55)vote for server0(term is 55)
+2025/02/05 19:58:29 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:29 server 3 (term is 56)vote for server1(term is 56)
+2025/02/05 19:58:29 server 0 (term is 56)vote for server1(term is 56)
+2025/02/05 19:58:29 server 3 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:29 server 0 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:29 Server 1 become leader,term = 56
+2025/02/05 19:58:29 Server 1 become leader,args.Term = 56
+2025/02/05 19:58:29 Server 1 append command {56 8373234413363985922}
+2025/02/05 19:58:30 server 3 (term is 57)vote for server0(term is 57)
+2025/02/05 19:58:30 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:30 server 0 (term is 58)vote for server3(term is 58)
+2025/02/05 19:58:30 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:30 server 0 (term is 59)vote for server3(term is 59)
+2025/02/05 19:58:30 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:31 server 0 (term is 60)vote for server3(term is 60)
+2025/02/05 19:58:31 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:31 server 0 (term is 61)vote for server3(term is 61)
+2025/02/05 19:58:31 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:31 server 0 (term is 62)vote for server3(term is 62)
+2025/02/05 19:58:31 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:31 server 0 (term is 63)vote for server1(term is 63)
+2025/02/05 19:58:31 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:31 server 3 (term is 63)vote for server1(term is 63)
+2025/02/05 19:58:31 server 3 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:31 Server 1 become leader,term = 63
+2025/02/05 19:58:31 Server 1 become leader,args.Term = 63
+2025/02/05 19:58:32 Server 1 append command {63 705967752080162071}
+2025/02/05 19:58:32 server 0 (term is 64)vote for server3(term is 64)
+2025/02/05 19:58:32 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:32 server 0 (term is 65)vote for server3(term is 65)
+2025/02/05 19:58:32 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:32 server 0 (term is 66)vote for server3(term is 66)
+2025/02/05 19:58:32 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:33 server 3 (term is 67)vote for server0(term is 67)
+2025/02/05 19:58:33 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:33 server 0 (term is 68)vote for server3(term is 68)
+2025/02/05 19:58:33 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:33 server 0 (term is 69)vote for server3(term is 69)
+2025/02/05 19:58:33 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:34 server 3 (term is 70)vote for server0(term is 70)
+2025/02/05 19:58:34 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:34 server 0 (term is 71)vote for server3(term is 71)
+2025/02/05 19:58:34 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:34 server 0 (term is 72)vote for server3(term is 72)
+2025/02/05 19:58:34 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:34 server 0 (term is 73)vote for server2(term is 73)
+2025/02/05 19:58:34 server 3 (term is 73)vote for server2(term is 73)
+2025/02/05 19:58:34 server 0 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:34 server 3 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:34 Server 2 become leader,term = 73
+2025/02/05 19:58:34 Server 2 become leader,args.Term = 73
+2025/02/05 19:58:34 Server 2 append command {73 1888427776027097128}
+2025/02/05 19:58:35 server 3 (term is 74)vote for server0(term is 74)
+2025/02/05 19:58:35 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:35 server 0 (term is 75)vote for server1(term is 75)
+2025/02/05 19:58:35 server 0 is supporting server 1 , now voteCount = 2
+2025/02/05 19:58:35 server 3 (term is 75)vote for server1(term is 75)
+2025/02/05 19:58:35 server 3 is supporting server 1 , now voteCount = 3
+2025/02/05 19:58:35 Server 1 become leader,term = 75
+2025/02/05 19:58:35 Server 1 become leader,args.Term = 75
+2025/02/05 19:58:35 Server 1 append command {75 3681567158401635830}
+2025/02/05 19:58:36 server 0 (term is 76)vote for server3(term is 76)
+2025/02/05 19:58:36 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:36 server 3 (term is 77)vote for server2(term is 77)
+2025/02/05 19:58:36 server 3 is supporting server 2 , now voteCount = 2
+2025/02/05 19:58:36 server 0 (term is 77)vote for server2(term is 77)
+2025/02/05 19:58:36 server 0 is supporting server 2 , now voteCount = 3
+2025/02/05 19:58:36 Server 2 become leader,term = 77
+2025/02/05 19:58:36 Server 2 become leader,args.Term = 77
+2025/02/05 19:58:36 Server 2 append command {77 8136523132967554337}
+2025/02/05 19:58:36 server 3 (term is 78)vote for server0(term is 78)
+2025/02/05 19:58:36 server 3 is supporting server 0 , now voteCount = 2
+2025/02/05 19:58:37 server 0 (term is 79)vote for server3(term is 79)
+2025/02/05 19:58:37 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:37 server 0 (term is 80)vote for server3(term is 80)
+2025/02/05 19:58:37 server 0 is supporting server 3 , now voteCount = 2
+2025/02/05 19:58:37 server 3 (term is 81)vote for server0(term is 81)
+2025/02/05 19:58:37 server 3 is supporting server 0 , now voteCount = 2
