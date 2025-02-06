@@ -102,8 +102,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	if rf.votedFor == -1 || rf.votedFor == args.CandidateId {
 		// 只有虚拟log || 它的上一个index的term比我的最后一个大(日志比我新) || term一样大但是它长度>=我
 		//DPrintf("rf.log = %v\nargs.LastLogTerm = %v,args.LastLogIndex = %v\n", rf.log, args.LastLogTerm, args.LastLogIndex)
-		if len(rf.log) == 1 || args.LastLogTerm > rf.log[len(rf.log)-1].Term ||
-			(args.LastLogTerm == rf.log[len(rf.log)-1].Term && args.LastLogIndex >= len(rf.log)) {
+		if args.LastLogTerm > rf.log[len(rf.log)-1].Term ||
+			(args.LastLogTerm == rf.log[len(rf.log)-1].Term && args.LastLogIndex >= rf.VirtualLogIdx(len(rf.log))) {
 			// 正式确定投票
 			rf.currentTerm = args.Term //更新当前term,防止孤立节点
 			rf.state = Follower

@@ -7,10 +7,15 @@ import "math"
 // 2. 回复了更新的term, 表示自己已经不是leader了(变成follower)
 // 3. prevLogIndex-prevLogTerm匹配的项不对,问题不大
 func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
-	sendArgs := *args
+	rf.mu.Lock()
+	if rf.state != Leader {
+		rf.mu.Unlock()
+		return false
+	}
+	rf.mu.Unlock()
 	// 一直请求rpc，直到成功
 	// fmt.Printf("Server %d send heartbeat to %d\n", rf.me, server)
-	if ok := rf.peers[server].Call("Raft.AppendEntries", &sendArgs, reply); ok {
+	if ok := rf.peers[server].Call("Raft.AppendEntries", args, reply); ok {
 		for !ok {
 			ok = rf.peers[server].Call("Raft.AppendEntries", args, reply)
 		}
@@ -38,15 +43,32 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 		// term仍然相同, 且自己还是leader, 表示prevLogIndex-prevLogTerm匹配的项不对
 		// 将nextIndex自减再重试，（后续改成term自减的那个index重试）
 		if reply.Term == rf.currentTerm && rf.state == Leader {
+			// 快速回退的处理
 			// 找到log中term自减的第一个index
 			for i := rf.nextIndex[server] - 1; i >= 0; i-- {
-				if rf.log[i].Term < rf.log[rf.nextIndex[server]-1].Term {
-					rf.nextIndex[server] = i + 1
-					// DPrintf("server %v 的nextIndex: %v\n", server, rf.nextIndex[server])
+				// [1122]2233 3 [11222]233344
+				if i < rf.lastIncludedIndex {
+					// 代表这个位置在snapshot了
+					// 也就是想穿进去的PreviousIndex在snapshot中,也是不行的
+					DPrintf("i = %v, nextIndex[%v] = %v, lastIncludedIndex = %v\n", i, server, rf.nextIndex[server], rf.lastIncludedIndex)
+					DPrintf("sendAppendEntries():handleInstallSnapshot\n")
+					go rf.handleInstallSnapshot(server)
 					break
 				}
-				if i == 0 {
-					rf.nextIndex[server] = i
+				// PrevLogIndex - PrevLogTerm到了下一个term
+				if rf.log[rf.RealLogIdx(i)].Term < rf.log[rf.RealLogIdx(rf.nextIndex[server]-1)].Term {
+					rf.nextIndex[server] = i + 1
+					DPrintf("server %v 发现server %v 的log与自己的log发生冲突, 重试\n", rf.me, server)
+					DPrintf(" i = %d,server %v 的nextIndex: %v\n", i, server, rf.nextIndex[server])
+					break
+				}
+				if i == rf.lastIncludedIndex {
+					// 刚好在snapshot末的位置，并且不符合，发送快照
+					rf.nextIndex[server] = i + 1
+					DPrintf("i = %v, nextIndex[%v] = %v, lastIncludedIndex = %v\n", i, server, rf.nextIndex[server], rf.lastIncludedIndex)
+					DPrintf("sendAppendEntries():handleInstallSnapshot\n")
+					// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
+					go rf.handleInstallSnapshot(server)
 					break
 				}
 			}
@@ -58,10 +80,9 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 		// server回复成功
 		rf.matchIndex[server] = args.PrevLogIndex + len(args.Entries)
 		rf.nextIndex[server] = rf.matchIndex[server] + 1
-		//DPrintf("[]nextindex = %v", rf.nextIndex)
-		//DPrintf("server %v 的nextIndex: %v\n", rf.me, rf.nextIndex[server])
+		// DPrintf("server %v 回复成功", server)
 		// 需要判断是否可以commit
-		N := len(rf.log) - 1
+		N := rf.VirtualLogIdx(len(rf.log) - 1)
 
 		for N > rf.commitIndex {
 			count := 1 // 1表示包括了leader自己
@@ -69,7 +90,9 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 				if i == rf.me {
 					continue
 				}
-				if rf.matchIndex[i] >= N && rf.log[N].Term == rf.currentTerm {
+				if rf.matchIndex[i] >= N && rf.log[rf.RealLogIdx(N)].Term == rf.currentTerm {
+					// 需要确保调用SnapShot时检查索引是否超过commitIndex
+					// 谨防数组越界
 					count += 1
 				}
 			}
@@ -96,13 +119,13 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	rf.timer.reset()
-	//DPrintf("server %v 收到server %v 的心跳\n", rf.me, args.LeaderId)
+	// DPrintf("server %v 收到server %v 的心跳\n", rf.me, args.LeaderId)
 	// 1. 收到rpc的term小于当前term，代表这个leader不合法
 	if args.Term < rf.currentTerm {
 		// follower觉得leader不合法
 		reply.Term = rf.currentTerm
 		reply.Success = false
-		//DPrintf("server %v 检查到server %v 的term不合法\n", rf.me, args.LeaderId)
+		DPrintf("server %v 检查到server %v 的term不合法\n", rf.me, args.LeaderId)
 		return
 	}
 	if args.Term > rf.currentTerm {
@@ -116,7 +139,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// rf.persist()
 	}
 	rf.currentTerm = args.Term
-	rf.persist()
 	if len(args.Entries) == 0 {
 		// 心跳函数
 		// fmt.Printf("Server %d receive heartbeat from %d\n", rf.me, args.LeaderId)
@@ -124,32 +146,42 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.votedFor = args.LeaderId
 		reply.Term = rf.currentTerm
 		reply.Success = true
-		rf.persist()
 		// return
 	}
-	if args.PrevLogIndex >= len(rf.log) || rf.log[args.PrevLogIndex].Term != args.PrevLogTerm {
+	rf.persist()
+
+	// isConflict := false
+	// 在快照里面
+	if args.PrevLogIndex < rf.lastIncludedIndex {
+		reply.Term = rf.currentTerm
+		reply.Success = false
+		// DPrintf("AppendEntries():在快照里面server %v 的lastIncludedIndex = %v, args.PrevLogIndex = %v\n", rf.me, rf.lastIncludedIndex, args.PrevLogIndex)
+		return
+	}
+	if args.PrevLogIndex >= rf.VirtualLogIdx(len(rf.log)) || rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term != args.PrevLogTerm {
 		// 校验PrevLogIndex和PrevLogTerm不合法
 		// 2. Reply false if log doesn’t contain an entry at prevLogIndex whose term matches prevLogTerm (§5.3)
 		reply.Term = rf.currentTerm
 		reply.Success = false
-		//DPrintf("server %v 检查到心跳中参数不合法:\n\t args.PrevLogIndex=%v, args.PrevLogTerm=%v, \n\tlen(self.log)=%v, self最后一个位置term为:%v\n", rf.me, args.PrevLogIndex, args.PrevLogTerm, len(rf.log), rf.log[len(rf.log)-1].Term)
-		//DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
+		// DPrintf("server %v 校验PrevLogIndex和PrevLogTerm不合法,rf.lastIncludedIndex = %d", rf.me, rf.lastIncludedIndex)
+		// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
+		// DPrintf("args.PrevLogIndex = %d,rf.VirtualLogIdx(len(rf.log)) = %d, rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term = %d, args.PrevLogTerm = %d\n", args.PrevLogIndex, rf.VirtualLogIdx(len(rf.log)), rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term, args.PrevLogTerm)
 		//DPrintf("Leader server %v 的log为: %+v\n", args.LeaderId, rf.log)
 		return
 	}
-	// 3. If an existing entry conflicts with a new one (same index
-	// but different terms), delete the existing entry and all that
-	// follow it (§5.3) 01   0111234
-	if len(rf.log) > args.PrevLogIndex+1 /*&& rf.log[args.PrevLogIndex+1].Term != args.Entries[0].Term*/ {
-		// 发生了冲突, 移除冲突位置开始后面所有的内容
-		DPrintf("server %v 的log与args发生冲突, 进行移除\n", rf.me)
-		rf.log = rf.log[:args.PrevLogIndex+1]
-		rf.persist()
-	}
-	// 4. Append any new entries not already in the log
-	// 补充apeend的业务
+	/// 到这一步就是准备要append了
 	if len(args.Entries) != 0 {
-		DPrintf("server的term为%v, leader的term为%v\n", rf.currentTerm, args.Term)
+		// 3. If an existing entry conflicts with a new one (same index
+		// but different terms), delete the existing entry and all that
+		// follow it (§5.3) 01   0111234
+		if rf.VirtualLogIdx(len(rf.log)) > args.PrevLogIndex+1 /*&& rf.log[args.PrevLogIndex+1].Term != args.Entries[0].Term*/ {
+			// 发生了冲突, 移除冲突位置开始后面所有的内容
+			DPrintf("server %v 的log与args发生冲突, 进行移除\n", rf.me)
+			rf.log = rf.log[:rf.RealLogIdx(args.PrevLogIndex+1)]
+			rf.persist()
+		}
+		// 4. Append any new entries not already in the log
+		// 补充apeend的业务
 		DPrintf("server %v 将要append的日志为: %+v\n", rf.me, args.Entries)
 		rf.log = append(rf.log, args.Entries...)
 		DPrintf("server %v 成功进行apeend from server %d, log: %+v\n", rf.me, args.LeaderId, rf.log)
@@ -159,8 +191,133 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	reply.Term = rf.currentTerm
 	if args.LeaderCommit > rf.commitIndex {
 		// 5.If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)
-		rf.commitIndex = int(math.Min(float64(args.LeaderCommit), float64(len(rf.log)-1)))
+		rf.commitIndex = int(math.Min(float64(args.LeaderCommit), float64(rf.VirtualLogIdx(len(rf.log)-1))))
 		rf.commitCh <- true
 	}
 	// //DPrintf("server %v 的commitIndex is %v", rf.me, rf.commitIndex)
+}
+
+// 只管更新快照不管剩下的log是否完全
+func (rf *Raft) handleInstallSnapshot(server int) {
+	reply := &InstallSnapshotReply{}
+
+	// DPrintf("handleInstallSnapshot():server %v 尝试获取锁mu", rf.me)
+	rf.mu.Lock()
+
+	if rf.state != Leader {
+		// 自己已经不是Lader了, 返回
+		DPrintf("handleInstallSnapshot():server %v 不再是leader", rf.me)
+		rf.mu.Unlock()
+		return
+	}
+
+	args := &InstallSnapshotArgs{
+		Term:              rf.currentTerm,
+		LeaderId:          rf.me,
+		LastIncludedIndex: rf.lastIncludedIndex,
+		LastIncludedTerm:  rf.lastIncludedTerm,
+		Data:              rf.snapShot,
+		LastIncludedCmd:   rf.log[0].Command,
+	}
+
+	rf.mu.Unlock()
+	// DPrintf("server %v handleInstallSnapshot 释放锁mu", rf.me)
+
+	// 发送RPC时不要持有锁
+	if ok := rf.peers[server].Call("Raft.InstallSnapshot", args, reply); !ok {
+		for !ok {
+			ok = rf.peers[server].Call("Raft.InstallSnapshot", args, reply)
+		}
+	}
+	DPrintf("server %v handleInstallSnapshot 发送RPC成功", rf.me)
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	if reply.ShouldDie {
+		DPrintf("ShouldDie: server %v currentTerm = %v, reply.Term = %v\n", rf.me, rf.currentTerm, reply.Term)
+	}
+	if reply.Term > rf.currentTerm {
+		// 自己是旧Leader
+		rf.currentTerm = reply.Term
+		rf.state = Follower
+		rf.votedFor = -1
+		rf.timer.reset()
+		rf.persist()
+		DPrintf("handleInstallSnapshot():Server %d 退位\n", rf.me)
+		return
+	}
+
+	rf.nextIndex[server] = rf.VirtualLogIdx(1)
+	DPrintf("server %v handleInstallSnapshot: server %v 的lastIncludedIndex: %v\n", rf.me, server, rf.lastIncludedIndex)
+}
+
+// InstallSnapshot handler
+func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
+	// DPrintf("server %v InstallSnapshot: args.LastIncludedIndex= %v\n", rf.me, args.LastIncludedIndex)
+	rf.mu.Lock()
+	rf.timer.reset()
+	defer func() {
+		rf.mu.Unlock()
+		// DPrintf("InstallSnapshot(): server %d unlock\n", rf.me)
+	}()
+
+	// 1. Reply immediately if term < currentTerm
+	if args.Term < rf.currentTerm {
+		reply.Term = rf.currentTerm
+		reply.ShouldDie = true
+		DPrintf("server %v 拒绝来自 %v 的 InstallSnapshot, 更小的Term\n", rf.me, args.LeaderId)
+		DPrintf("server %v currentTerm = %v, args.Term = %v\n", rf.me, rf.currentTerm, args.Term)
+		return
+	}
+	// 不需要实现分块的RPC
+	if args.Term > rf.currentTerm {
+		rf.currentTerm = args.Term
+		rf.votedFor = -1
+		DPrintf("server %v 接受来自 %v 的 InstallSnapshot, 且发现了更大的Term\n", rf.me, args.LeaderId)
+	}
+
+	rf.state = Follower
+
+	hasEntry := false
+	rIdx := 0
+	// 6. 如果现有的log entry 有一样的 index and term as snapshot’s last included entry, 保留 log entries following it 并且回复
+	//  [111]222333  334455 but snapshot is [111222333]
+	for ; rIdx < len(rf.log); rIdx++ {
+		if rf.VirtualLogIdx(rIdx) == args.LastIncludedIndex && rf.log[rIdx].Term == args.LastIncludedTerm {
+			hasEntry = true
+			DPrintf("server %v rIdx = %v,args.LastIncludedIndex = %v\n", rf.me, rIdx, args.LastIncludedIndex)
+			break
+		}
+	}
+
+	msg := &ApplyMsg{
+		SnapshotValid: true,
+		Snapshot:      args.Data,
+		SnapshotTerm:  args.LastIncludedTerm,
+		SnapshotIndex: args.LastIncludedIndex,
+	}
+	if hasEntry {
+		DPrintf("server %v InstallSnapshot: args.LastIncludedIndex= %v 位置存在, 保留后面的log\n", rf.me, args.LastIncludedIndex)
+
+		rf.log = rf.log[rIdx:]
+	} else {
+		DPrintf("server %v InstallSnapshot: 清空log\n", rf.me)
+		rf.log = make([]LogEntry, 0)
+		rf.log = append(rf.log, LogEntry{Term: rf.lastIncludedTerm, Command: args.LastIncludedCmd}) // 索引为0处占位
+	}
+
+	// 8. Reset state machine using snapshot contents (and load snapshot’s cluster configuration)
+	rf.snapShot = args.Data
+	rf.lastIncludedIndex = args.LastIncludedIndex
+	rf.lastIncludedTerm = args.LastIncludedTerm
+	if rf.commitIndex < args.LastIncludedIndex {
+		rf.commitIndex = args.LastIncludedIndex
+	}
+	// if rf.lastApplied < args.LastIncludedIndex {
+	rf.lastApplied = args.LastIncludedIndex
+	// }
+	reply.Term = rf.currentTerm
+	DPrintf("server %v InstallSnapshot: args.LastIncludedIndex= %v, lastIncludedIndex = %v,lastApplied = %d \n", rf.me, args.LastIncludedIndex, rf.lastIncludedIndex, rf.lastApplied)
+	rf.applyCh <- *msg
+	// DPrintf("InstallSnapshot(): server %d applyCh <- msg\n", rf.me)
+	rf.persist()
 }

@@ -141,22 +141,35 @@ func (cfg *config) crash1(i int) {
 	}
 }
 
+// checkLogs 检查并更新日志条目。
+// 如果其他服务器已经提交了不同的值，则记录错误信息。
+// 返回错误信息和一个布尔值，表示前一个日志条目是否存在。
 func (cfg *config) checkLogs(i int, m ApplyMsg) (string, bool) {
 	err_msg := ""
 	v := m.Command
+
+	// 遍历所有服务器的日志，检查是否有不同的值已经提交
 	for j := 0; j < len(cfg.logs); j++ {
 		if old, oldok := cfg.logs[j][m.CommandIndex]; oldok && old != v {
 			log.Printf("%v: log %v; server %v\n", i, cfg.logs[i], cfg.logs[j])
-			// some server has already committed a different value for this entry!
+			// 某个服务器已经为该条目提交了不同的值
 			err_msg = fmt.Sprintf("commit index=%v server=%v %v != server=%v %v",
 				m.CommandIndex, i, m.Command, j, old)
 		}
 	}
+
+	// 检查前一个日志条目是否存在
 	_, prevok := cfg.logs[i][m.CommandIndex-1]
+
+	// 更新当前服务器的日志条目
 	cfg.logs[i][m.CommandIndex] = v
+
+	// 更新最大索引
 	if m.CommandIndex > cfg.maxIndex {
 		cfg.maxIndex = m.CommandIndex
 	}
+
+	// 返回错误信息和前一个日志条目是否存在的布尔值
 	return err_msg, prevok
 }
 
@@ -225,9 +238,12 @@ func (cfg *config) applierSnap(i int, applyCh chan ApplyMsg) {
 		err_msg := ""
 		if m.SnapshotValid {
 			cfg.mu.Lock()
+			DPrintf("before ingestSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
 			err_msg = cfg.ingestSnap(i, m.Snapshot, m.SnapshotIndex)
+			DPrintf("ingestSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
 			cfg.mu.Unlock()
 		} else if m.CommandValid {
+			DPrintf("applierSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
 			if m.CommandIndex != cfg.lastApplied[i]+1 {
 				err_msg = fmt.Sprintf("server %v apply out of order, expected index %v, got %v", i, cfg.lastApplied[i]+1, m.CommandIndex)
 			}
@@ -245,7 +261,7 @@ func (cfg *config) applierSnap(i int, applyCh chan ApplyMsg) {
 			cfg.mu.Lock()
 			cfg.lastApplied[i] = m.CommandIndex
 			cfg.mu.Unlock()
-
+			DPrintf("applierSnap():arrive here\n")
 			if (m.CommandIndex+1)%SnapShotInterval == 0 {
 				w := new(bytes.Buffer)
 				e := labgob.NewEncoder(w)
@@ -256,6 +272,7 @@ func (cfg *config) applierSnap(i int, applyCh chan ApplyMsg) {
 				}
 				e.Encode(xlog)
 				rf.Snapshot(m.CommandIndex, w.Bytes())
+				DPrintf("applierSnap():arrive here22\n")
 			}
 		} else {
 			// Ignore other types of ApplyMsg.

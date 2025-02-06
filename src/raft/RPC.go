@@ -40,6 +40,10 @@ type AppendEntriesArgs struct {
 type AppendEntriesReply struct {
 	Term    int
 	Success bool
+
+	XTerm  int // Follower中与Leader冲突的Log对应的Term
+	XIndex int // Follower中，对应Term为XTerm的第一条Log条目的索引
+	XLen   int // Follower的log的长度
 }
 
 // example RequestVote RPC arguments structure.
@@ -59,4 +63,17 @@ type RequestVoteReply struct {
 	// Your data here (3A).
 	Term        int  //current term, for candidate to update itself
 	VoteGranted bool //true means candidate received vote
+}
+type InstallSnapshotArgs struct {
+	Term              int         // leader’s term
+	LeaderId          int         // so follower can redirect clients
+	LastIncludedIndex int         // the snapshot replaces all entries up through and including this index
+	LastIncludedTerm  int         // term of lastIncludedIndex snapshot file
+	Data              []byte      //[] raw bytes of the snapshot chunk
+	LastIncludedCmd   interface{} // 自己新加的字段, 用于在0处占位
+}
+
+type InstallSnapshotReply struct {
+	Term      int // currentTerm, for leader to update itself
+	ShouldDie bool
 }

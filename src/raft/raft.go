@@ -30,7 +30,7 @@ import (
 	"6.5840/labrpc"
 )
 
-const HeartBeatTimeout = 75 * time.Millisecond
+const HeartBeatTimeout = 100 * time.Millisecond
 const CommitCheckTimeInterval = 40 * time.Millisecond
 const (
 	Follower = iota //默认值
@@ -69,9 +69,24 @@ type Raft struct {
 	timer     Timer
 	voteCount int //投票数
 
-	applyCh chan ApplyMsg
-
+	applyCh  chan ApplyMsg
 	commitCh chan bool
+
+	snapShot          []byte // 快照
+	lastIncludedIndex int    // 日志中的最高索引
+	lastIncludedTerm  int    // 日志中的最高Term
+}
+
+// 访问rf.log一律使用真实的切片索引, 即Real Index,因为被截断的log是不会被存储的
+// 其余情况, 一律使用全局真实递增的索引Virtual Index
+func (rf *Raft) RealLogIdx(vIdx int) int {
+	// 调用该函数需要是加锁的状态
+	return vIdx - rf.lastIncludedIndex
+}
+
+func (rf *Raft) VirtualLogIdx(rIdx int) int {
+	// 调用该函数需要是加锁的状态
+	return rIdx + rf.lastIncludedIndex
 }
 
 // return currentTerm and whether this server
@@ -90,15 +105,6 @@ func (rf *Raft) GetState() (int, bool) {
 	return term, isleader
 }
 
-// the service says it has created a snapshot that has
-// all info up to and including index. this means the
-// service no longer needs the log through (and including)
-// that index. Raft should now trim its log as much as possible.
-func (rf *Raft) Snapshot(index int, snapshot []byte) {
-	// Your code here (3D).
-
-}
-
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
 // server isn't the leader, returns false. otherwise start the
@@ -111,18 +117,6 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 // if it's ever committed. the second return value is the current
 // term. the third return value is true if this server believes it is
 // the leader.
-
-// 使用 Raft 的服务（例如 k/v 服务器）想要启动协议，
-// 以便将下一个命令附加到 Raft 的日志中。如果此
-// 服务器不是领导者，则返回 false。否则启动协议并立即返回。
-// 无法保证此命令一定会提交到 Raft 日志，因为领导者
-// 可能会失败或输掉选举。即使 Raft 实例已被终止，
-// 此函数也应该正常返回。
-//
-// 第一个返回值是命令将出现在的索引
-// （如果曾经提交过）。第二个返回值是当前
-// 任期。如果此服务器认为它是
-// 领导者，则第三个返回值为 true。
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// Your code here (3B).
 	rf.mu.Lock()
@@ -136,12 +130,12 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		Command: command,
 	}
 	rf.log = append(rf.log, newLogEntry)
-	rf.nextIndex[rf.me] = len(rf.log)
+	rf.nextIndex[rf.me] = rf.VirtualLogIdx(len(rf.log)) // 好像不要，但是加了没问题
 
 	// DPrintf("leader %v 准备持久化", rf.me)
 	rf.persist()
 	DPrintf("Server %d append command %v\n", rf.me, newLogEntry)
-	return len(rf.log) - 1, rf.currentTerm, true
+	return rf.VirtualLogIdx(len(rf.log) - 1), rf.currentTerm, true
 
 }
 
@@ -199,7 +193,7 @@ func (rf *Raft) ticker() {
 					args := RequestVoteArgs{
 						Term:         rf.currentTerm,
 						CandidateId:  rf.me,
-						LastLogIndex: len(rf.log),
+						LastLogIndex: rf.VirtualLogIdx(len(rf.log)),
 						LastLogTerm:  rf.log[len(rf.log)-1].Term,
 					}
 					reply := RequestVoteReply{}
@@ -215,33 +209,37 @@ func (rf *Raft) ticker() {
 					if i == rf.me {
 						continue
 					}
-					var prevLogTerm int
-					if rf.nextIndex[i] > 0 {
-						prevLogTerm = rf.log[rf.nextIndex[i]-1].Term
-					} else {
-						prevLogTerm = -1 // 或者设置为一个默认值
-					}
+					// DPrintf("ticker():send heartbeat from %d to %d \n", rf.me, i)
 					args := AppendEntriesArgs{
 						Term:         rf.currentTerm,
 						LeaderId:     rf.me,
 						PrevLogIndex: max(rf.nextIndex[i]-1, 0),
-						PrevLogTerm:  prevLogTerm,
+						// PrevLogTerm:  prevLogTerm,
 						LeaderCommit: rf.commitIndex,
 					}
-					// 有实际的log entry需要发送,0是虚拟的log entry
-					follower_nextIndex := max(rf.nextIndex[i], 1)
-					if len(rf.log)-1 >= rf.nextIndex[i] {
-						// 一次性发送全部没发的entries
-						args.Entries = rf.log[follower_nextIndex:]
-						//DPrintf("server %v 的nextIndex: %v\n", rf.me, rf.nextIndex)
-						//DPrintf("server %v 发送给server %v 的日志为: %+v\n", rf.me, i, args.Entries)
+					sendInstallSnapshot := false
+					if args.PrevLogIndex < rf.lastIncludedIndex {
+						DPrintf("PrevLogIndex is %v, lastIncludedIndex is %v\n", args.PrevLogIndex, rf.lastIncludedIndex)
+						// 表示Follower有落后的部分并且被截断
+						sendInstallSnapshot = true
+					} else if rf.VirtualLogIdx(len(rf.log)-1) > args.PrevLogIndex {
+						//有新的log需要发送
+						args.Entries = rf.log[rf.RealLogIdx(args.PrevLogIndex+1):]
 					} else {
 						// 如果没有新的log发送, 就发送一个长度为0的切片, 表示心跳
 						args.Entries = make([]LogEntry, 0)
 					}
+
 					reply := AppendEntriesReply{}
+					if sendInstallSnapshot {
+						DPrintf("ticker():handleInstallSnapshot from %d to %d \n", rf.me, i)
+						go rf.handleInstallSnapshot(i)
+					} else {
+						args.PrevLogTerm = rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term
+						go rf.sendAppendEntries(i, &args, &reply)
+					}
 					// 正式发送心跳
-					go rf.sendAppendEntries(i, &args, &reply)
+					// go rf.sendAppendEntries(i, &args, &reply)
 				}
 			}
 			rf.mu.Unlock() // 一把大锁锁住select
@@ -292,8 +290,14 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.timer = Timer{_timer: time.NewTicker(time.Duration(150+rand.Intn(200)) * time.Millisecond)} // initialize from state persisted before a crash
 
 	rf.commitCh = make(chan bool)
+	// initialize from state persisted before a crash
+	// 如果读取成功, 将覆盖log, votedFor和currentTerm
+	rf.readSnapshot(persister.ReadSnapshot())
 	rf.readPersist(persister.ReadRaftState())
-
+	for i := 0; i < len(rf.nextIndex); i++ {
+		rf.nextIndex[i] = rf.VirtualLogIdx(len(rf.log)) // raft中的index是从1开始的
+		rf.matchIndex[i] = rf.lastIncludedIndex
+	}
 	// start ticker goroutine to start elections
 	go rf.ticker()
 	go rf.CommitChecker()
@@ -309,18 +313,50 @@ func (rf *Raft) CommitChecker() {
 		// for rf.commitIndex <= rf.lastApplied {
 		// 	rf.condApply.Wait()
 		// }
-		for rf.commitIndex > rf.lastApplied {
-			// //DPrintf("rf.commitIndex = %v, rf.lastApplied = %v\n", rf.commitIndex, rf.lastApplied)
-			DPrintf("server %v 准备将命令(索引为 %v ) 应用到状态机\n", rf.me, rf.lastApplied)
-			rf.lastApplied += 1
+
+		// 由于applyCh会阻塞，所以我们创建一个缓冲区，将所有的消息缓存起来，避免长时间的锁
+		DPrintf("commitIndex: %v, lastApplied: %v\n", rf.commitIndex, rf.lastApplied)
+		msgBuf := make([]*ApplyMsg, 0, rf.commitIndex-rf.lastApplied)
+		tmpApplied := rf.lastApplied
+		for rf.commitIndex > tmpApplied {
+			tmpApplied += 1
+			if tmpApplied <= rf.lastIncludedIndex {
+				// tmpApplied可能是snapShot中已经被截断的日志项, 这些日志项就不需要再发送了
+				continue
+			}
 			msg := &ApplyMsg{
 				CommandValid: true,
-				Command:      rf.log[rf.lastApplied].Command,
-				CommandIndex: rf.lastApplied,
+				Command:      rf.log[rf.RealLogIdx(tmpApplied)].Command,
+				CommandIndex: tmpApplied,
+				SnapshotTerm: rf.log[rf.RealLogIdx(tmpApplied)].Term,
 			}
-			rf.applyCh <- *msg
+
+			msgBuf = append(msgBuf, msg)
 		}
 		rf.mu.Unlock()
-		// time.Sleep(CommitCheckTimeInterval)
+		// DPrintf("server %v CommitChecker 释放锁mu", rf.me)
+
+		// 注意, 在解锁后可能又出现了SnapShot进而修改了rf.lastApplied
+		for _, msg := range msgBuf {
+			rf.mu.Lock()
+			if msg.CommandIndex != rf.lastApplied+1 {
+				rf.mu.Unlock()
+				continue
+			}
+			DPrintf("server %v 准备commit, log = %v:%v, lastIncludedIndex=%v", rf.me, msg.CommandIndex, msg.SnapshotTerm, rf.lastIncludedIndex)
+
+			rf.mu.Unlock()
+			// 注意, 在解锁后可能又出现了SnapShot进而修改了rf.lastApplied
+
+			rf.applyCh <- *msg
+
+			rf.mu.Lock()
+			if msg.CommandIndex != rf.lastApplied+1 {
+				rf.mu.Unlock()
+				continue
+			}
+			rf.lastApplied = msg.CommandIndex
+			rf.mu.Unlock()
+		}
 	}
 }
