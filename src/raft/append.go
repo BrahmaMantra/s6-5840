@@ -66,6 +66,7 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 					// 刚好在snapshot末的位置，并且不符合，发送快照
 					rf.nextIndex[server] = i + 1
 					DPrintf("i = %v, nextIndex[%v] = %v, lastIncludedIndex = %v\n", i, server, rf.nextIndex[server], rf.lastIncludedIndex)
+					DPrintf("rf.log[rf.RealLogIdx(rf.nextIndex[server]-1)].Term =%v,args.PrevLogTerm = %v\n", rf.log[rf.RealLogIdx(rf.nextIndex[server]-1)].Term, args.PrevLogTerm)
 					DPrintf("sendAppendEntries():handleInstallSnapshot\n")
 					// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
 					go rf.handleInstallSnapshot(server)
@@ -155,7 +156,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.PrevLogIndex < rf.lastIncludedIndex {
 		reply.Term = rf.currentTerm
 		reply.Success = false
-		// DPrintf("AppendEntries():在快照里面server %v 的lastIncludedIndex = %v, args.PrevLogIndex = %v\n", rf.me, rf.lastIncludedIndex, args.PrevLogIndex)
+		DPrintf("AppendEntries():在快照里面server %v 的lastIncludedIndex = %v, args.PrevLogIndex = %v\n", rf.me, rf.lastIncludedIndex, args.PrevLogIndex)
 		return
 	}
 	if args.PrevLogIndex >= rf.VirtualLogIdx(len(rf.log)) || rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term != args.PrevLogTerm {
@@ -163,10 +164,11 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// 2. Reply false if log doesn’t contain an entry at prevLogIndex whose term matches prevLogTerm (§5.3)
 		reply.Term = rf.currentTerm
 		reply.Success = false
-		// DPrintf("server %v 校验PrevLogIndex和PrevLogTerm不合法,rf.lastIncludedIndex = %d", rf.me, rf.lastIncludedIndex)
+		DPrintf("server %v 校验PrevLogIndex和PrevLogTerm不合法,rf.lastIncludedIndex = %d", rf.me, rf.lastIncludedIndex)
 		// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
-		// DPrintf("args.PrevLogIndex = %d,rf.VirtualLogIdx(len(rf.log)) = %d, rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term = %d, args.PrevLogTerm = %d\n", args.PrevLogIndex, rf.VirtualLogIdx(len(rf.log)), rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term, args.PrevLogTerm)
-		//DPrintf("Leader server %v 的log为: %+v\n", args.LeaderId, rf.log)
+		if args.PrevLogIndex < rf.VirtualLogIdx(len(rf.log)) {
+			DPrintf("args.PrevLogIndex = %d,rf.VirtualLogIdx(len(rf.log)) = %d, rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term = %d, args.PrevLogTerm = %d\n", args.PrevLogIndex, rf.VirtualLogIdx(len(rf.log)), rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term, args.PrevLogTerm)
+		}
 		return
 	}
 	/// 到这一步就是准备要append了

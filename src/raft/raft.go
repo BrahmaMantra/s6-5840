@@ -278,7 +278,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.state = Follower
 	rf.currentTerm = 0
 	rf.votedFor = -1
-	rf.log = make([]LogEntry, 0) // log 从 0 开始
+	rf.log = make([]LogEntry, 0) // log 从 1 开始
 	rf.log = append(rf.log, LogEntry{Term: -1})
 	rf.commitIndex = 0
 	rf.lastApplied = 0
@@ -286,6 +286,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.matchIndex = make([]int, len(peers))
 	rf.voteCount = 0
 	rf.applyCh = applyCh
+
+	// 3D 初始化，因为没快照的时候，这个值是-1
+	rf.lastIncludedTerm = -1
 	//200ms-350ms超时时间
 	rf.timer = Timer{_timer: time.NewTicker(time.Duration(150+rand.Intn(200)) * time.Millisecond)} // initialize from state persisted before a crash
 

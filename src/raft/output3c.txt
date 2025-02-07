@@ -1,0 +1,37 @@
+2025/02/07 14:04:44 server 0 读取快照失败: 无快照
+2025/02/07 14:04:44 server 1 读取快照失败: 无快照
+2025/02/07 14:04:44 server 2 读取快照失败: 无快照
+2025/02/07 14:04:44 server 3 读取快照失败: 无快照
+2025/02/07 14:04:44 server 4 读取快照失败: 无快照
+Test (3C): Figure 8 (unreliable) ...
+2025/02/07 14:04:44 server 1 (term is 1)vote for server4(term is 1)
+2025/02/07 14:04:44 server 1 is supporting server 4 , now voteCount = 2
+2025/02/07 14:04:44 server 2 (term is 1)vote for server4(term is 1)
+2025/02/07 14:04:44 server 2 is supporting server 4 , now voteCount = 3
+2025/02/07 14:04:44 Server 4 become leader,term = 1
+2025/02/07 14:04:44 Server 4 become leader,args.Term = 1
+2025/02/07 14:04:44 server 0 (term is 1)vote for server4(term is 1)
+2025/02/07 14:04:44 server 0 is supporting server 4 , now voteCount = 4
+2025/02/07 14:04:44 Server 4 become leader,term = 1
+2025/02/07 14:04:44 Server 4 become leader,args.Term = 1
+2025/02/07 14:04:44 Server 4 append command {1 7065}
+2025/02/07 14:04:44 server 2 (term is 2)vote for server0(term is 2)
+2025/02/07 14:04:44 server 2 is supporting server 0 , now voteCount = 2
+2025/02/07 14:04:44 server 1 (term is 2)vote for server0(term is 2)
+2025/02/07 14:04:44 server 1 is supporting server 0 , now voteCount = 3
+2025/02/07 14:04:44 Server 0 become leader,term = 2
+2025/02/07 14:04:44 Server 0 become leader,args.Term = 2
+2025/02/07 14:04:44 RequestVote():Server 4 退位
+2025/02/07 14:04:45 server 1 (term is 3)vote for server2(term is 3)
+2025/02/07 14:04:45 server 1 is supporting server 2 , now voteCount = 2
+2025/02/07 14:04:45 server 3 (term is 3)vote for server2(term is 3)
+2025/02/07 14:04:45 server 3 is supporting server 2 , now voteCount = 3
+2025/02/07 14:04:45 Server 2 become leader,term = 3
+2025/02/07 14:04:45 Server 2 become leader,args.Term = 3
+2025/02/07 14:04:45 RequestVote():Server 0 退位
+2025/02/07 14:04:45 server 0 (term is 3)vote for server2(term is 3)
+2025/02/07 14:04:45 server 0 is supporting server 2 , now voteCount = 4
+2025/02/07 14:04:45 Server 2 become leader,term = 3
+2025/02/07 14:04:45 Server 2 become leader,args.Term = 3
+signal: interrupt
+FAIL	6.5840/raft	1.343s
