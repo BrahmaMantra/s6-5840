@@ -132,9 +132,19 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.log = append(rf.log, newLogEntry)
 	rf.nextIndex[rf.me] = rf.VirtualLogIdx(len(rf.log)) // 好像不要，但是加了没问题
 
-	// DPrintf("leader %v 准备持久化", rf.me)
+	DPrintf("leader %v 准备持久化", rf.me)
 	rf.persist()
 	DPrintf("Server %d append command %v\n", rf.me, newLogEntry)
+
+	// log.Printf("Server %d append command %v\n", rf.me, newLogEntry)
+	select {
+	case rf.timer.msgComing <- true:
+		// log.Printf("Server %d send msgComing\n", rf.me)
+		// 成功发送消息
+	default:
+		// 通道已满，跳过发送
+	}
+	rf.resetHeartBeat()
 	return rf.VirtualLogIdx(len(rf.log) - 1), rf.currentTerm, true
 
 }
@@ -163,6 +173,13 @@ func (rf *Raft) ticker() {
 		// Your code here (3A)
 		// Check if a leader election should be started.
 		select {
+		case <-rf.timer.msgComing:
+			DPrintf("server %v .timer.msgComing = %v\n", rf.me, &rf.timer.msgComing)
+			rf.mu.Lock()
+			if rf.state == Leader {
+				rf.doLeader()
+			}
+			rf.mu.Unlock()
 		case <-rf.timer._timer.C:
 			// fmt.Printf("Server %d timeout\n", rf.me)
 			rf.mu.Lock()
@@ -199,54 +216,10 @@ func (rf *Raft) ticker() {
 					go rf.sendRequestVote(i, &args, &reply)
 				}
 			case Leader:
-				// fmt.Printf("Server %d send heartbeat\n", rf.me)
-				rf.resetHeartBeat()
-				// 给每个节点发送心跳
-				for i := 0; i < len(rf.peers); i++ {
-					// 忽略自己
-					if i == rf.me {
-						continue
-					}
-					// DPrintf("ticker():send heartbeat from %d to %d \n", rf.me, i)
-					args := AppendEntriesArgs{
-						Term:         rf.currentTerm,
-						LeaderId:     rf.me,
-						PrevLogIndex: max(rf.nextIndex[i]-1, 0),
-						// PrevLogTerm:  prevLogTerm,
-						LeaderCommit: rf.commitIndex,
-					}
-					sendInstallSnapshot := false
-					if args.PrevLogIndex < rf.lastIncludedIndex {
-						DPrintf("PrevLogIndex is %v, lastIncludedIndex is %v\n", args.PrevLogIndex, rf.lastIncludedIndex)
-						// 表示Follower有落后的部分并且被截断
-						sendInstallSnapshot = true
-					} else if rf.VirtualLogIdx(len(rf.log)-1) > args.PrevLogIndex {
-						//有新的log需要发送
-						args.Entries = rf.log[rf.RealLogIdx(args.PrevLogIndex+1):]
-					} else {
-						// 如果没有新的log发送, 就发送一个长度为0的切片, 表示心跳
-						args.Entries = make([]LogEntry, 0)
-					}
-
-					reply := AppendEntriesReply{}
-					if sendInstallSnapshot {
-						// 刚开始设计了这个地方，但是发现不需要，但是我也懒得删了
-						DPrintf("ticker():handleInstallSnapshot from %d to %d \n", rf.me, i)
-						go rf.handleInstallSnapshot(i)
-					} else {
-						args.PrevLogTerm = rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term
-						go rf.sendAppendEntries(i, &args, &reply)
-					}
-					// 正式发送心跳
-					// go rf.sendAppendEntries(i, &args, &reply)
-				}
+				rf.doLeader()
 			}
 			rf.mu.Unlock() // 一把大锁锁住select
 		}
-		// pause for a random amount of time between 50 and 350
-		// milliseconds.注释掉，不需要
-		// ms := 50 + (rand.Int63() % 300)
-		// time.Sleep(time.Duration(ms) * time.Millisecond)
 		time.Sleep(10 * time.Millisecond)
 	}
 }
@@ -275,7 +248,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	// Your initialization code here (3A, 3B, 3C).
 	// 初始化 Raft 的状态
 	rf.state = Follower
-	rf.currentTerm = 0
+	rf.currentTerm = 1
 	rf.votedFor = -1
 	rf.log = make([]LogEntry, 0) // log 从 1 开始
 	rf.log = append(rf.log, LogEntry{Term: -1})
@@ -288,8 +261,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// 3D 初始化，因为没快照的时候，这个值是-1
 	rf.lastIncludedTerm = -1
-	//200ms-350ms超时时间
+	//150ms-350ms超时时间
 	rf.timer = Timer{_timer: time.NewTicker(time.Duration(150+rand.Intn(200)) * time.Millisecond)} // initialize from state persisted before a crash
+	rf.timer.msgComing = make(chan bool, 1)
 
 	rf.commitCh = make(chan bool)
 	// initialize from state persisted before a crash
@@ -355,5 +329,49 @@ func (rf *Raft) CommitChecker() {
 			rf.lastApplied = msg.CommandIndex
 			rf.mu.Unlock()
 		}
+	}
+}
+
+func (rf *Raft) doLeader() {
+	// fmt.Printf("Server %d send heartbeat\n", rf.me)
+	rf.resetHeartBeat()
+	// 给每个节点发送心跳
+	for i := 0; i < len(rf.peers); i++ {
+		// 忽略自己
+		if i == rf.me {
+			continue
+		}
+		// DPrintf("ticker():send heartbeat from %d to %d \n", rf.me, i)
+		args := AppendEntriesArgs{
+			Term:         rf.currentTerm,
+			LeaderId:     rf.me,
+			PrevLogIndex: max(rf.nextIndex[i]-1, 0),
+			// PrevLogTerm:  prevLogTerm,
+			LeaderCommit: rf.commitIndex,
+		}
+		sendInstallSnapshot := false
+		if args.PrevLogIndex < rf.lastIncludedIndex {
+			DPrintf("PrevLogIndex is %v, lastIncludedIndex is %v\n", args.PrevLogIndex, rf.lastIncludedIndex)
+			// 表示Follower有落后的部分并且被截断
+			sendInstallSnapshot = true
+		} else if rf.VirtualLogIdx(len(rf.log)-1) > args.PrevLogIndex {
+			//有新的log需要发送
+			args.Entries = rf.log[rf.RealLogIdx(args.PrevLogIndex+1):]
+		} else {
+			// 如果没有新的log发送, 就发送一个长度为0的切片, 表示心跳
+			args.Entries = make([]LogEntry, 0)
+		}
+
+		reply := AppendEntriesReply{}
+		if sendInstallSnapshot {
+			// 刚开始设计了这个地方，但是发现不需要，但是我也懒得删了
+			DPrintf("ticker():handleInstallSnapshot from %d to %d \n", rf.me, i)
+			go rf.handleInstallSnapshot(i)
+		} else {
+			args.PrevLogTerm = rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term
+			go rf.sendAppendEntries(i, &args, &reply)
+		}
+		// 正式发送心跳
+		// go rf.sendAppendEntries(i, &args, &reply)
 	}
 }

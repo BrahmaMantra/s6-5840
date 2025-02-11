@@ -6,7 +6,8 @@ import (
 )
 
 type Timer struct {
-	_timer *time.Ticker
+	_timer    *time.Ticker
+	msgComing chan bool
 }
 
 // 单位ms
