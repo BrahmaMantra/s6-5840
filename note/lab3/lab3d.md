@@ -1,3 +1,4 @@
+# log compaction (hard)
 2025.2.5 - 2025.2.7
 ## 快照请求与传输
 某一时刻， service为了减小内存压力，将状态机状态封装成一个SnapShot并将请求发送给Leader一侧的raft(Follower侧的sevice也会会存在快照操作), raft层保存SnapShot并截断自己的log数组, 当通过心跳发现Follower的节点的log落后SnapShot时, 通过InstallSnapshot发送给Follower, Follower保存SnapShot并将快照发送给service
@@ -5,8 +6,8 @@
 ### InstallSnapshot RPC发送时机
 阅读论文可知, 当Leader发现Follower要求回退的日志已经被SnapShot截断时, 需要发生InstallSnapshot RPC, 在我设计的代码中, 以下2个场景会出现:
 
-#### 3.2.1.1 心跳发送函数发起
-
+#### appendEntries发送函数发起
+#### appendEntries回复处理函数发起
 
 
 ### 问题

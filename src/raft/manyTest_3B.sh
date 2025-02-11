@@ -13,7 +13,7 @@ do
     echo "Running test iteration $i of $max_tests..."
 
     # 运行 go 测试命令
-    go test -v -run 3B &> output.log
+    go test -v -run 3B &> output3B.log
 
     # 检查 go 命令的退出状态
     if [ "$?" -eq 0 ]; then
@@ -26,7 +26,7 @@ do
         # 测试失败
         fail_count=$((fail_count+1))
         echo "Test iteration $i failed, check 'failure_$i.log' for details."
-        mv output.log "failure_$i.log"
+        mv output3B.log "failure3B_$i.log"
     fi
 done
 

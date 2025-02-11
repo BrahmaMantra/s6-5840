@@ -2,6 +2,9 @@
 lab3是一个十分折磨的实验啊!!!
 
 - 数据只由leader流向follower
+- 不管true还是false，不是一个term都不处理(避免过时的RPC请求)
+
+- 通过for来尝试重复发送RPC的时候，一定要检查reply.term == 0 是否成立，因为超时的RPC也会返回true但是reply是默认值，我们通过判断它的term来判断它是否超时了
 
 fz@Brahmamantra:~/go/src/6.5840/src/raft$ go test -run 3
 Test (3A): initial election ...

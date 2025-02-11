@@ -20,6 +20,10 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 			ok = rf.peers[server].Call("Raft.AppendEntries", args, reply)
 		}
 	}
+	if reply.Term == 0 {
+		DPrintf("server %v sendAppendEntries 发送RPC失败", rf.me)
+		return false
+	}
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	// 收到过期的prc回复
@@ -100,6 +104,7 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 			if count > len(rf.peers)/2 {
 				// 如果至少一半的follower回复了成功, 更新commitIndex
 				rf.commitIndex = N
+				DPrintf("server %v 的rf.commitIndex = %v\n", rf.me, rf.commitIndex)
 				rf.commitCh <- true
 				break
 			}
@@ -121,10 +126,10 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	defer rf.mu.Unlock()
 	rf.timer.reset()
 	// DPrintf("server %v 收到server %v 的心跳\n", rf.me, args.LeaderId)
+	reply.Term = rf.currentTerm
 	// 1. 收到rpc的term小于当前term，代表这个leader不合法
 	if args.Term < rf.currentTerm {
 		// follower觉得leader不合法
-		reply.Term = rf.currentTerm
 		reply.Success = false
 		DPrintf("server %v 检查到server %v 的term不合法\n", rf.me, args.LeaderId)
 		return
@@ -134,27 +139,29 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		if rf.state == Leader {
 			DPrintf("RequestVote():Server %d 退位\n", rf.me)
 		}
-		// rf.currentTerm = args.Term // 更新iterm
-		rf.votedFor = -1 // 易错点: 更新投票记录为未投票
+		rf.currentTerm = args.Term // 更新iterm
+		rf.votedFor = -1           // 易错点: 更新投票记录为未投票
 		rf.state = Follower
-		// rf.persist()
+		rf.persist()
 	}
-	rf.currentTerm = args.Term
-	if len(args.Entries) == 0 {
-		// 心跳函数
-		// fmt.Printf("Server %d receive heartbeat from %d\n", rf.me, args.LeaderId)
-		rf.state = Follower
-		rf.votedFor = args.LeaderId
-		reply.Term = rf.currentTerm
-		reply.Success = true
-		// return
-	}
+
+	// if len(args.Entries) == 0 {
+	// 	// 心跳函数 X   没必要专门处理心跳
+	// 	// fmt.Printf("Server %d receive heartbeat from %d\n", rf.me, args.LeaderId)
+	// 	if rf.state == Leader {
+	// 		DPrintf("AppendEntries():: server %v 退位\n", rf.me)
+	// 	}
+	// 	rf.state = Follower
+	// 	rf.votedFor = args.LeaderId
+	// 	reply.Term = rf.currentTerm
+	// 	reply.Success = true
+	// 	// return
+	// }
 	rf.persist()
 
 	// isConflict := false
 	// 在快照里面
 	if args.PrevLogIndex < rf.lastIncludedIndex {
-		reply.Term = rf.currentTerm
 		reply.Success = false
 		DPrintf("AppendEntries():在快照里面server %v 的lastIncludedIndex = %v, args.PrevLogIndex = %v\n", rf.me, rf.lastIncludedIndex, args.PrevLogIndex)
 		return
@@ -162,9 +169,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.PrevLogIndex >= rf.VirtualLogIdx(len(rf.log)) || rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term != args.PrevLogTerm {
 		// 校验PrevLogIndex和PrevLogTerm不合法
 		// 2. Reply false if log doesn’t contain an entry at prevLogIndex whose term matches prevLogTerm (§5.3)
-		reply.Term = rf.currentTerm
 		reply.Success = false
-		DPrintf("server %v 校验PrevLogIndex和PrevLogTerm不合法,rf.lastIncludedIndex = %d", rf.me, rf.lastIncludedIndex)
+		DPrintf("server %v 校验server %d PrevLogIndex和PrevLogTerm不合法", rf.me, args.LeaderId)
 		// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
 		if args.PrevLogIndex < rf.VirtualLogIdx(len(rf.log)) {
 			DPrintf("args.PrevLogIndex = %d,rf.VirtualLogIdx(len(rf.log)) = %d, rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term = %d, args.PrevLogTerm = %d\n", args.PrevLogIndex, rf.VirtualLogIdx(len(rf.log)), rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term, args.PrevLogTerm)
@@ -190,9 +196,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.persist()
 	}
 	reply.Success = true
-	reply.Term = rf.currentTerm
 	if args.LeaderCommit > rf.commitIndex {
 		// 5.If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)
+		DPrintf("args.LeaderCommit = %v,rf.commitIndex = %v", args.LeaderCommit, rf.commitIndex)
 		rf.commitIndex = int(math.Min(float64(args.LeaderCommit), float64(rf.VirtualLogIdx(len(rf.log)-1))))
 		rf.commitCh <- true
 	}
@@ -231,6 +237,10 @@ func (rf *Raft) handleInstallSnapshot(server int) {
 			ok = rf.peers[server].Call("Raft.InstallSnapshot", args, reply)
 		}
 	}
+	if reply.Term == 0 {
+		DPrintf("server %v handleInstallSnapshot 发送RPC失败", rf.me)
+		return
+	}
 	DPrintf("server %v handleInstallSnapshot 发送RPC成功", rf.me)
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
@@ -256,7 +266,6 @@ func (rf *Raft) handleInstallSnapshot(server int) {
 func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapshotReply) {
 	// DPrintf("server %v InstallSnapshot: args.LastIncludedIndex= %v\n", rf.me, args.LastIncludedIndex)
 	rf.mu.Lock()
-	rf.timer.reset()
 	defer func() {
 		rf.mu.Unlock()
 		// DPrintf("InstallSnapshot(): server %d unlock\n", rf.me)
@@ -270,6 +279,7 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 		DPrintf("server %v currentTerm = %v, args.Term = %v\n", rf.me, rf.currentTerm, args.Term)
 		return
 	}
+	rf.timer.reset()
 	// 不需要实现分块的RPC
 	if args.Term > rf.currentTerm {
 		rf.currentTerm = args.Term

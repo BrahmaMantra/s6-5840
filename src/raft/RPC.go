@@ -77,3 +77,13 @@ type InstallSnapshotReply struct {
 	Term      int // currentTerm, for leader to update itself
 	ShouldDie bool
 }
+
+// PreVote 请求消息
+type PreVoteArgs struct {
+	// Term int // 请求节点的 term
+}
+
+// PreVote 响应消息
+type PreVoteReply struct {
+	IsOk bool // 是否同意
+}

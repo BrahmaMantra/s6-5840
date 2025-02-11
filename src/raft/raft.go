@@ -30,10 +30,9 @@ import (
 	"6.5840/labrpc"
 )
 
-const HeartBeatTimeout = 100 * time.Millisecond
-const CommitCheckTimeInterval = 40 * time.Millisecond
 const (
 	Follower = iota //默认值
+	PreCandidate
 	Candidate
 	Leader
 )
@@ -65,9 +64,10 @@ type Raft struct {
 	matchIndex []int //for each server, index of highest log entry known to be replicated on server
 
 	// 论文外，用于实现状态转换
-	state     int //当前节点的状态,follower,candidate,leader
-	timer     Timer
-	voteCount int //投票数
+	state        int //当前节点的状态,follower,candidate,leader
+	timer        Timer
+	preVoteCount int //预投票数
+	voteCount    int //投票数
 
 	applyCh  chan ApplyMsg
 	commitCh chan bool
@@ -168,10 +168,14 @@ func (rf *Raft) ticker() {
 			rf.mu.Lock()
 			switch rf.state {
 			case Follower:
-				rf.state = Candidate
-				// fmt.Printf("Server %d become candidate\n", rf.me)
+				rf.state = PreCandidate
 				fallthrough
+			case PreCandidate:
+				rf.preVoteCount = 1
+				rf.timer.reset()
+				rf.handlePreVote()
 			case Candidate:
+				// if rf.canSendVote
 				rf.currentTerm++ //election用的下一次的term是当前term+1
 				rf.votedFor = rf.me
 				rf.voteCount = 1
@@ -184,12 +188,6 @@ func (rf *Raft) ticker() {
 					if i == rf.me {
 						continue
 					}
-					// 如果在投票期间，状态改变了，就不用投票了
-					// 这里是为了防止在投票期间，状态改变了，比如收到了别人的投票被干成follower了
-					// 又或者你已经是leader了
-					// if rf.state != Candidate {
-					// 	break
-					// }
 					args := RequestVoteArgs{
 						Term:         rf.currentTerm,
 						CandidateId:  rf.me,
@@ -232,6 +230,7 @@ func (rf *Raft) ticker() {
 
 					reply := AppendEntriesReply{}
 					if sendInstallSnapshot {
+						// 刚开始设计了这个地方，但是发现不需要，但是我也懒得删了
 						DPrintf("ticker():handleInstallSnapshot from %d to %d \n", rf.me, i)
 						go rf.handleInstallSnapshot(i)
 					} else {
@@ -312,11 +311,6 @@ func (rf *Raft) CommitChecker() {
 	for !rf.killed() {
 		<-rf.commitCh
 		rf.mu.Lock()
-		// //DPrintf("server %v arrive here\n", rf.me)
-		// for rf.commitIndex <= rf.lastApplied {
-		// 	rf.condApply.Wait()
-		// }
-
 		// 由于applyCh会阻塞，所以我们创建一个缓冲区，将所有的消息缓存起来，避免长时间的锁
 		DPrintf("commitIndex: %v, lastApplied: %v\n", rf.commitIndex, rf.lastApplied)
 		msgBuf := make([]*ApplyMsg, 0, rf.commitIndex-rf.lastApplied)

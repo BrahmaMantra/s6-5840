@@ -1,5 +1,6 @@
+# Part 3C: persistence (hard)
 2025.2.04 - 2025.2.05
-3.3 持久化时是否需要锁?
+持久化时是否需要锁?
 
 按照我的理解, 持久化时不需要锁保护log, 原因如下:
 
@@ -18,9 +19,10 @@
 3: 111333333 444444444444444
 4: 111333333 44444444444444455
 
-解决办法：原本我只在“日志比我新的leader”判定中写了rf.currentTerm = args.Term，但是会有情况是日志一样但是我还没投票，此时我也要更新currentTerm
+解决办法：不应该有这个问题，我们在RequestVote的时候应该更新rf.currentTerm = args.term（不小于的话）
 
 ## 结果
+~~~ sh
 fz@Brahmamantra:~/go/src/6.5840/src/raft$ go test -run 3C
 Test (3C): basic persistence ...
   ... Passed --   3.5  3   92   20574    6
@@ -40,3 +42,4 @@ Test (3C): unreliable churn ...
   ... Passed --  16.2  5  772  318077  424
 PASS
 ok      6.5840/raft     135.502s
+~~~ 
