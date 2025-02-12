@@ -12,8 +12,8 @@ type Timer struct {
 
 // 单位ms
 const (
-	HeartBeatTimeout = 75 * time.Millisecond
-	followerTimeout  = 200
+	HeartBeatTimeout = 50 * time.Millisecond
+	followerTimeout  = 125
 	followerRand     = 150
 )
 

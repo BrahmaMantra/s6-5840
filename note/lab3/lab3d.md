@@ -20,4 +20,23 @@
 1. 当同时要applyCmd和applySnapshot的时候，会阻塞，因为上层config在lastapplied%10 ==0的时候会进入SnapShot，两个环节都需要锁
 2. 当你要apply一个快照，其中**cfg.lastApplied[i] = lastIncludedIndex**代表会直接更新lastApplied,所以要进行相应处理！
 
-- apply缓冲区的设计：
+## 最后
+~~~ sh
+fz@Brahmamantra:~/go/src/6.5840/src/raft$ go test -run 3D
+Test (3D): snapshots basic ...
+  ... Passed --   2.2  3  154   46338  220
+Test (3D): install snapshots (disconnect) ...
+  ... Passed --  34.2  3 1627  592388  296
+Test (3D): install snapshots (disconnect+unreliable) ...
+  ... Passed --  42.1  3 2014  802494  324
+Test (3D): install snapshots (crash) ...
+  ... Passed --  24.5  3 1219  596226  310
+Test (3D): install snapshots (unreliable+crash) ...
+  ... Passed --  31.8  3 1449  827585  347
+Test (3D): crash and restart all servers ...
+  ... Passed --   7.7  3  348   78061   63
+Test (3D): snapshot initialization after crash ...
+  ... Passed --   2.3  3   96   18864   14
+PASS
+ok      6.5840/raft     144.879s
+~~~

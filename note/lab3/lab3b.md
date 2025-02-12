@@ -58,27 +58,27 @@ Successes: 50
 Failures: 0
 fz@Brahmamantra:~/go/src/6.5840/src/raft$ go test -run 3B
 Test (3B): basic agreement ...
-  ... Passed --   0.7  3   14    3624    3
+  ... Passed --   0.6  3   24    4088    3
 Test (3B): RPC byte count ...
-  ... Passed --   2.0  3   46  112504   11
+  ... Passed --   1.1  3   52  112268   11
 Test (3B): test progressive failure of followers ...
-  ... Passed --   4.7  3  156   32543    3
+  ... Passed --   4.5  3  232   40489    3
 Test (3B): test failure of leaders ...
-  ... Passed --   5.0  3  242   53399    3
+  ... Passed --   4.9  3  364   71875    3
 Test (3B): agreement after follower reconnects ...
-  ... Passed --   3.9  3  106   26016    7
+  ... Passed --   3.3  3  148   32124    7
 Test (3B): no agreement if too many followers disconnect ...
-  ... Passed --   3.5  5  252   51356    4
+  ... Passed --   3.4  5  392   62892    4
 Test (3B): concurrent Start()s ...
-  ... Passed --   0.8  3   18    4692    6
+  ... Passed --   0.5  3   16    2896    6
 Test (3B): rejoin of partitioned leader ...
-  ... Passed --   4.4  3  180   42006    4
+  ... Passed --   4.0  3  258   53117    4
 Test (3B): leader backs up quickly over incorrect follower logs ...
-  ... Passed --  21.8  5 2320 1758704  102
+  ... Passed --  12.8  5 2275 1515918  102
 Test (3B): RPC counts aren't too high ...
-  ... Passed --   2.2  3   56   15072   12
+  ... Passed --   2.0  3   80   18720   12
 PASS
-ok      6.5840/raft     48.942s
+ok      6.5840/raft     37.280s
 
 ## 尚未解决
 在开启 -race的时候，call 和append(log)的时候会有极小概率的竞争，但是似乎没有影响到结果

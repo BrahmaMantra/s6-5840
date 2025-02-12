@@ -40,10 +40,6 @@ type AppendEntriesArgs struct {
 type AppendEntriesReply struct {
 	Term    int
 	Success bool
-
-	XTerm  int // Follower中与Leader冲突的Log对应的Term
-	XIndex int // Follower中，对应Term为XTerm的第一条Log条目的索引
-	XLen   int // Follower的log的长度
 }
 
 // example RequestVote RPC arguments structure.

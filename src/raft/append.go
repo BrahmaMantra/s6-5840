@@ -20,8 +20,8 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 			ok = rf.peers[server].Call("Raft.AppendEntries", args, reply)
 		}
 	}
-	if reply.Term == 0 {
-		DPrintf("server %v sendAppendEntries 发送RPC失败", rf.me)
+	if reply.Term == 0 && !reply.Success {
+		// DPrintf("server %v sendAppendEntries 发送RPC失败", rf.me)
 		return false
 	}
 	rf.mu.Lock()
@@ -105,7 +105,10 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 				// 如果至少一半的follower回复了成功, 更新commitIndex
 				rf.commitIndex = N
 				DPrintf("server %v 的rf.commitIndex = %v\n", rf.me, rf.commitIndex)
-				rf.commitCh <- true
+				select {
+				case rf.commitCh <- true:
+				default:
+				}
 				break
 			}
 			N -= 1
@@ -144,19 +147,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.state = Follower
 		rf.persist()
 	}
-
-	// if len(args.Entries) == 0 {
-	// 	// 心跳函数 X   没必要专门处理心跳
-	// 	// fmt.Printf("Server %d receive heartbeat from %d\n", rf.me, args.LeaderId)
-	// 	if rf.state == Leader {
-	// 		DPrintf("AppendEntries():: server %v 退位\n", rf.me)
-	// 	}
-	// 	rf.state = Follower
-	// 	rf.votedFor = args.LeaderId
-	// 	reply.Term = rf.currentTerm
-	// 	reply.Success = true
-	// 	// return
-	// }
 	rf.persist()
 
 	// isConflict := false
@@ -182,17 +172,32 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// 3. If an existing entry conflicts with a new one (same index
 		// but different terms), delete the existing entry and all that
 		// follow it (§5.3) 01   0111234
-		if rf.VirtualLogIdx(len(rf.log)) > args.PrevLogIndex+1 /*&& rf.log[args.PrevLogIndex+1].Term != args.Entries[0].Term*/ {
-			// 发生了冲突, 移除冲突位置开始后面所有的内容
-			DPrintf("server %v 的log与args发生冲突, 进行移除\n", rf.me)
-			rf.log = rf.log[:rf.RealLogIdx(args.PrevLogIndex+1)]
-			rf.persist()
+
+		// if rf.VirtualLogIdx(len(rf.log)) > args.PrevLogIndex+1 /*&& rf.log[args.PrevLogIndex+1].Term != args.Entries[0].Term*/ {
+		// 	// 发生了冲突, 移除冲突位置开始后面所有的内容	不能这样做，因为可能有旧的RPC过来，把我之前弄好的log给破坏了
+		// 	DPrintf("server %v 的log与args发生冲突, 进行移除\n", rf.me)
+		// 	rf.log = rf.log[:rf.RealLogIdx(args.PrevLogIndex+1)]
+		// 	rf.persist()
+		// }
+
+		for idx, log := range args.Entries {
+			ridx := rf.RealLogIdx(args.PrevLogIndex) + 1 + idx
+			if ridx < len(rf.log) && rf.log[ridx].Term != log.Term {
+				// 某位置发生了冲突, 覆盖这个位置开始的所有内容
+				rf.log = rf.log[:ridx]
+				rf.log = append(rf.log, args.Entries[idx:]...)
+				break
+			} else if ridx == len(rf.log) {
+				// 没有发生冲突但长度更长了, 直接拼接
+				rf.log = append(rf.log, args.Entries[idx:]...)
+				break
+			}
 		}
 		// 4. Append any new entries not already in the log
 		// 补充apeend的业务
-		DPrintf("server %v 将要append的日志为: %+v\n", rf.me, args.Entries)
-		rf.log = append(rf.log, args.Entries...)
-		DPrintf("server %v 成功进行apeend from server %d, log: %+v\n", rf.me, args.LeaderId, rf.log)
+		if len(args.Entries) != 0 {
+			DPrintf("server %v 成功进行apeend, lastApplied=%v, len(log)=%v\n", rf.me, rf.lastApplied, len(rf.log))
+		}
 		rf.persist()
 	}
 	reply.Success = true
@@ -200,7 +205,10 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// 5.If leaderCommit > commitIndex, set commitIndex = min(leaderCommit, index of last new entry)
 		DPrintf("args.LeaderCommit = %v,rf.commitIndex = %v", args.LeaderCommit, rf.commitIndex)
 		rf.commitIndex = int(math.Min(float64(args.LeaderCommit), float64(rf.VirtualLogIdx(len(rf.log)-1))))
-		rf.commitCh <- true
+		select {
+		case rf.commitCh <- true:
+		default:
+		}
 	}
 	// //DPrintf("server %v 的commitIndex is %v", rf.me, rf.commitIndex)
 }
@@ -276,7 +284,7 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 		reply.Term = rf.currentTerm
 		reply.ShouldDie = true
 		DPrintf("server %v 拒绝来自 %v 的 InstallSnapshot, 更小的Term\n", rf.me, args.LeaderId)
-		DPrintf("server %v currentTerm = %v, args.Term = %v\n", rf.me, rf.currentTerm, args.Term)
+		// DPrintf("server %v currentTerm = %v, args.Term = %v\n", rf.me, rf.currentTerm, args.Term)
 		return
 	}
 	rf.timer.reset()

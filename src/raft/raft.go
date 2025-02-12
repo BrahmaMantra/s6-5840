@@ -20,6 +20,7 @@ package raft
 import (
 	//	"bytes"
 
+	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -286,7 +287,7 @@ func (rf *Raft) CommitChecker() {
 		<-rf.commitCh
 		rf.mu.Lock()
 		// 由于applyCh会阻塞，所以我们创建一个缓冲区，将所有的消息缓存起来，避免长时间的锁
-		DPrintf("commitIndex: %v, lastApplied: %v\n", rf.commitIndex, rf.lastApplied)
+		DPrintf("server %d:commitIndex: %v, lastApplied: %v\n", rf.me, rf.commitIndex, rf.lastApplied)
 		msgBuf := make([]*ApplyMsg, 0, rf.commitIndex-rf.lastApplied)
 		tmpApplied := rf.lastApplied
 		for rf.commitIndex > tmpApplied {
@@ -294,6 +295,11 @@ func (rf *Raft) CommitChecker() {
 			if tmpApplied <= rf.lastIncludedIndex {
 				// tmpApplied可能是snapShot中已经被截断的日志项, 这些日志项就不需要再发送了
 				continue
+			}
+			if rf.RealLogIdx(tmpApplied) >= len(rf.log) {
+				// 有可能在处理commit的时候，log被截断了
+				log.Fatalf("server %v:commitIndex: %v, lastApplied: %v, len(rf.log): %v,tmpApplied:%v\n", rf.me, rf.commitIndex, rf.lastApplied, len(rf.log), tmpApplied)
+				break
 			}
 			msg := &ApplyMsg{
 				CommandValid: true,

@@ -25,21 +25,21 @@
 ~~~ sh
 fz@Brahmamantra:~/go/src/6.5840/src/raft$ go test -run 3C
 Test (3C): basic persistence ...
-  ... Passed --   3.5  3   92   20574    6
+  ... Passed --   3.4  3  140   28042    6
 Test (3C): more persistence ...
-  ... Passed --  23.1  5 1564  314754   17
+  ... Passed --  18.4  5 2237  370339   17
 Test (3C): partitioned leader and one follower crash, leader restarts ...
-  ... Passed --   1.9  3   42    9258    4
+  ... Passed --   1.9  3   62   11526    4
 Test (3C): Figure 8 ...
-  ... Passed --  31.9  5  736  132481   14
+  ... Passed --  31.8  5 2028  250607   19
 Test (3C): unreliable agreement ...
-  ... Passed --   6.1  5  312   89727  246
+  ... Passed --   1.7  5  368  110512  246
 Test (3C): Figure 8 (unreliable) ...
-  ... Passed --  36.3  5 3864 17807811  909
+  ... Passed --  33.7  5 11153 27410481  291
 Test (3C): churn ...
-  ... Passed --  16.5  5 1316 2393064  327
+  ... Passed --  16.1  5 5596 5218386 2764
 Test (3C): unreliable churn ...
-  ... Passed --  16.2  5  772  318077  424
+  ... Passed --  16.2  5 3682 3905367  545
 PASS
-ok      6.5840/raft     135.502s
+ok      6.5840/raft     123.106s
 ~~~ 

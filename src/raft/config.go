@@ -238,9 +238,7 @@ func (cfg *config) applierSnap(i int, applyCh chan ApplyMsg) {
 		err_msg := ""
 		if m.SnapshotValid {
 			cfg.mu.Lock()
-			DPrintf("before ingestSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
 			err_msg = cfg.ingestSnap(i, m.Snapshot, m.SnapshotIndex)
-			DPrintf("ingestSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
 			cfg.mu.Unlock()
 		} else if m.CommandValid {
 			DPrintf("applierSnap(): server %v lastApplied = %v\n", i, cfg.lastApplied[i])
