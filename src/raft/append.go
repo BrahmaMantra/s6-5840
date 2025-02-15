@@ -55,8 +55,9 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 					// 代表这个位置在snapshot了
 					// 也就是想穿进去的PreviousIndex在snapshot中,也是不行的
 					DPrintf("i = %v, nextIndex[%v] = %v, lastIncludedIndex = %v\n", i, server, rf.nextIndex[server], rf.lastIncludedIndex)
-					DPrintf("sendAppendEntries():handleInstallSnapshot\n")
-					go rf.handleInstallSnapshot(server)
+					// DPrintf("sendAppendEntries():handleInstallSnapshot\n")
+					// go rf.handleInstallSnapshot(server)
+					rf.nextIndex[server] = rf.lastIncludedIndex
 					break
 				}
 				// PrevLogIndex - PrevLogTerm到了下一个term
@@ -71,9 +72,10 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 					rf.nextIndex[server] = i + 1
 					DPrintf("i = %v, nextIndex[%v] = %v, lastIncludedIndex = %v\n", i, server, rf.nextIndex[server], rf.lastIncludedIndex)
 					DPrintf("rf.log[rf.RealLogIdx(rf.nextIndex[server]-1)].Term =%v,args.PrevLogTerm = %v\n", rf.log[rf.RealLogIdx(rf.nextIndex[server]-1)].Term, args.PrevLogTerm)
-					DPrintf("sendAppendEntries():handleInstallSnapshot\n")
+					// DPrintf("sendAppendEntries():handleInstallSnapshot\n")
+					// go rf.handleInstallSnapshot(server)
+					rf.nextIndex[server] = rf.lastIncludedIndex
 					// DPrintf("server %v 的log为: %+v\n", rf.me, rf.log)
-					go rf.handleInstallSnapshot(server)
 					break
 				}
 			}

@@ -16,7 +16,7 @@ do
     
     # 运行 go 测试命令
     # go test -v -run TestFigure8Unreliable3C &> output3C.log
-    time go test -v -run TestFigure8Unreliable3C &> output3C.log
+    time go test -v -run 3C &> output3C.log
     # 检查 go 命令的退出状态
     if [ "$?" -eq 0 ]; then
         # 测试成功

@@ -138,12 +138,15 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	DPrintf("Server %d append command %v\n", rf.me, newLogEntry)
 
 	// log.Printf("Server %d append command %v\n", rf.me, newLogEntry)
-	select {
-	case rf.timer.msgComing <- true:
-		// log.Printf("Server %d send msgComing\n", rf.me)
-		// 成功发送消息
-	default:
-		// 通道已满，跳过发送
+	if time.Since(rf.timer.lastComing) > msgGap*time.Millisecond {
+		rf.timer.lastComing = time.Now()
+		select {
+		case rf.timer.msgComing <- true:
+			// log.Printf("Server %d send msgComing\n", rf.me)
+			// 成功发送消息
+		default:
+			// 通道已满，跳过发送
+		}
 	}
 	rf.resetHeartBeat()
 	return rf.VirtualLogIdx(len(rf.log) - 1), rf.currentTerm, true
@@ -265,6 +268,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	//150ms-350ms超时时间
 	rf.timer = Timer{_timer: time.NewTicker(time.Duration(150+rand.Intn(200)) * time.Millisecond)} // initialize from state persisted before a crash
 	rf.timer.msgComing = make(chan bool, 1)
+	rf.timer.lastComing = time.Now()
 
 	rf.commitCh = make(chan bool)
 	// initialize from state persisted before a crash
@@ -370,8 +374,7 @@ func (rf *Raft) doLeader() {
 
 		reply := AppendEntriesReply{}
 		if sendInstallSnapshot {
-			// 刚开始设计了这个地方，但是发现不需要，但是我也懒得删了
-			DPrintf("ticker():handleInstallSnapshot from %d to %d \n", rf.me, i)
+			DPrintf("doLeader():handleInstallSnapshot from %d to %d \n", rf.me, i)
 			go rf.handleInstallSnapshot(i)
 		} else {
 			args.PrevLogTerm = rf.log[rf.RealLogIdx(args.PrevLogIndex)].Term

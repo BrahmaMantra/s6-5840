@@ -6,15 +6,22 @@ import (
 )
 
 type Timer struct {
-	_timer    *time.Ticker
-	msgComing chan bool
+	// 主要处理一般心跳
+	_timer *time.Ticker
+
+	// leader处理msg到来
+	lastComing time.Time
+	msgComing  chan bool
 }
 
 // 单位ms
 const (
-	HeartBeatTimeout = 50 * time.Millisecond
-	followerTimeout  = 125
+	HeartBeatTimeout = 75 * time.Millisecond
+	followerTimeout  = 180
 	followerRand     = 150
+
+	// leader处理msg到来
+	msgGap = 10
 )
 
 // randomTime 心跳超时时间

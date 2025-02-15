@@ -28,3 +28,8 @@ type KVServer struct {
 - 这里还需要进行之前提到的判断: 低于lastApplied索引的日志都是包含在快照中, 在尽显lab4A的操作之后, 再判断是否需要生成快照, 在我的实现中, 如果仅仅比较maxraftstate和persister.RaftStateSize()相等才生成快照的话, 无法通过测例, 因为可能快照RPC存在一定延时, 所以我采用的手段是只要达到阈值的95%, 就生成快照
 ## 加载快照的时机判断
 首先启动时需要判断是否需要加载快照, 然后就是ApplyHandler从通道收到快照时需要判断加载, 都很简单
+
+
+## 遇到的问题
+### TestSnapshotUnreliable3B超时
+在之前的设计中，每个请求到来我都要通知AppendEntries，导致发送的RPC过多

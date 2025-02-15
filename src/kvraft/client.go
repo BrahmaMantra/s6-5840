@@ -9,16 +9,18 @@ import (
 )
 
 const (
-	RpcRetryInterval = time.Millisecond * 50
+	RpcRetryInterval = time.Millisecond * 50 // RPC重试间隔时间
 )
 
+// Clerk 结构体表示客户端
 type Clerk struct {
-	servers    []*labrpc.ClientEnd
-	seq        uint64
-	identifier int64
-	leaderId   int
+	servers    []*labrpc.ClientEnd // 服务器列表
+	seq        uint64              // 请求序列号
+	identifier int64               // 客户端唯一标识符
+	leaderId   int                 // 当前认为的leader服务器ID
 }
 
+// 生成一个随机的64位整数作为客户端唯一标识符
 func nrand() int64 {
 	max := big.NewInt(int64(1) << 62)
 	bigx, _ := rand.Int(rand.Reader, max)
@@ -26,12 +28,14 @@ func nrand() int64 {
 	return x
 }
 
+// 获取当前请求的序列号，并将序列号加1
 func (ck *Clerk) GetSeq() (SendSeq uint64) {
 	SendSeq = ck.seq
 	ck.seq += 1
 	return
 }
 
+// 创建一个新的Clerk实例
 func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 	ck := new(Clerk)
 	ck.servers = servers
@@ -40,16 +44,9 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 	return ck
 }
 
-// fetch the current value for a key.
-// returns "" if the key does not exist.
-// keeps trying forever in the face of all other errors.
-//
-// you can send an RPC with code like this:
-// ok := ck.servers[i].Call("KVServer.Get", &args, &reply)
-//
-// the types of args and reply (including whether they are pointers)
-// must match the declared types of the RPC handler function's
-// arguments. and reply must be passed as a pointer.
+// 获取指定键的当前值。
+// 如果键不存在，则返回空字符串。
+// 在遇到所有其他错误时会不断重试。
 func (ck *Clerk) Get(key string) string {
 	args := &GetArgs{Key: key, Seq: ck.GetSeq(), Identifier: ck.identifier}
 
@@ -89,16 +86,9 @@ func (ck *Clerk) Get(key string) string {
 	}
 }
 
-// shared by Put and Append.
-//
-// you can send an RPC with code like this:
-// ok := ck.servers[i].Call("KVServer.PutAppend", &args, &reply)
-//
-// the types of args and reply (including whether they are pointers)
-// must match the declared types of the RPC handler function's
-// arguments. and reply must be passed as a pointer.
+// 共享的Put和Append方法。
+// 发送一个RPC请求。
 func (ck *Clerk) PutAppend(key string, value string, op string) {
-	// You will have to modify this function.
 	args := &PutAppendArgs{Key: key, Value: value, Op: op, Seq: ck.GetSeq(), Identifier: ck.identifier}
 
 	for {
@@ -134,9 +124,12 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 	}
 }
 
+// Put方法，调用PutAppend方法实现
 func (ck *Clerk) Put(key string, value string) {
 	ck.PutAppend(key, value, "Put")
 }
+
+// Append方法，调用PutAppend方法实现
 func (ck *Clerk) Append(key string, value string) {
 	ck.PutAppend(key, value, "Append")
 }
