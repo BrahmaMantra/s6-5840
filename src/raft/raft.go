@@ -105,6 +105,20 @@ func (rf *Raft) GetState() (int, bool) {
 	term = rf.currentTerm
 	return term, isleader
 }
+func (rf *Raft) GetRaftStateSize() int {
+	return rf.persister.RaftStateSize()
+}
+
+func (rf *Raft) GetId() int {
+	return rf.me
+}
+
+// used by upper layer to detect whether there are any logs in current term
+func (rf *Raft) HasLogInCurrentTerm() bool {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	return rf.log[len(rf.log)-1].Term == rf.currentTerm
+}
 
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
@@ -309,7 +323,7 @@ func (rf *Raft) CommitChecker() {
 				CommandValid: true,
 				Command:      rf.log[rf.RealLogIdx(tmpApplied)].Command,
 				CommandIndex: tmpApplied,
-				SnapshotTerm: rf.log[rf.RealLogIdx(tmpApplied)].Term,
+				CommandTerm:  rf.log[rf.RealLogIdx(tmpApplied)].Term,
 			}
 
 			msgBuf = append(msgBuf, msg)

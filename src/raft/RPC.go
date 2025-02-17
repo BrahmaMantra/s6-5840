@@ -14,6 +14,7 @@ type ApplyMsg struct {
 	Command      interface{}
 	CommandIndex int
 
+	CommandTerm int
 	// For 3D:
 	SnapshotValid bool
 	Snapshot      []byte
