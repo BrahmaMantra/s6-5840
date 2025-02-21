@@ -20,7 +20,6 @@ package raft
 import (
 	//	"bytes"
 
-	"log"
 	"math/rand"
 	"sync"
 	"sync/atomic"
@@ -119,6 +118,9 @@ func (rf *Raft) HasLogInCurrentTerm() bool {
 	defer rf.mu.Unlock()
 	return rf.log[len(rf.log)-1].Term == rf.currentTerm
 }
+func (rf *Raft) getLastLog() LogEntry {
+	return rf.log[len(rf.log)-1]
+}
 
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
@@ -147,7 +149,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.log = append(rf.log, newLogEntry)
 	rf.nextIndex[rf.me] = rf.VirtualLogIdx(len(rf.log)) // 好像不要，但是加了没问题
 
-	DPrintf("leader %v 准备持久化", rf.me)
+	// DPrintf("leader %v 准备持久化", rf.me)
 	rf.persist()
 	DPrintf("Server %d append command %v\n", rf.me, newLogEntry)
 
@@ -316,7 +318,7 @@ func (rf *Raft) CommitChecker() {
 			}
 			if rf.RealLogIdx(tmpApplied) >= len(rf.log) {
 				// 有可能在处理commit的时候，log被截断了
-				log.Fatalf("server %v:commitIndex: %v, lastApplied: %v, len(rf.log): %v,tmpApplied:%v\n", rf.me, rf.commitIndex, rf.lastApplied, len(rf.log), tmpApplied)
+				DPrintf("server %v:commitIndex: %v, lastApplied: %v, len(rf.log): %v,tmpApplied:%v\n", rf.me, rf.commitIndex, rf.lastApplied, len(rf.log), tmpApplied)
 				break
 			}
 			msg := &ApplyMsg{
@@ -333,24 +335,24 @@ func (rf *Raft) CommitChecker() {
 
 		// 注意, 在解锁后可能又出现了SnapShot进而修改了rf.lastApplied
 		for _, msg := range msgBuf {
-			rf.mu.Lock()
-			if msg.CommandIndex != rf.lastApplied+1 {
-				rf.mu.Unlock()
-				continue
-			}
+			// rf.mu.Lock()
+			// if msg.CommandIndex != rf.lastApplied+1 {
+			// rf.mu.Unlock()
+			// continue
+			// }
 			DPrintf("server %v 准备commit, log = %v:%v, lastIncludedIndex=%v", rf.me, msg.CommandIndex, msg.SnapshotTerm, rf.lastIncludedIndex)
 
-			rf.mu.Unlock()
+			// rf.mu.Unlock()
 			// 注意, 在解锁后可能又出现了SnapShot进而修改了rf.lastApplied
 
 			rf.applyCh <- *msg
-
+			DPrintf("server %v commit, log = %v:%v, lastIncludedIndex=%v", rf.me, msg.CommandIndex, msg.SnapshotTerm, rf.lastIncludedIndex)
 			rf.mu.Lock()
 			if msg.CommandIndex != rf.lastApplied+1 {
 				rf.mu.Unlock()
 				continue
 			}
-			rf.lastApplied = msg.CommandIndex
+			rf.lastApplied = max(msg.CommandIndex, rf.lastApplied)
 			rf.mu.Unlock()
 		}
 	}
@@ -397,4 +399,10 @@ func (rf *Raft) doLeader() {
 		// 正式发送心跳
 		// go rf.sendAppendEntries(i, &args, &reply)
 	}
+}
+
+func (rf *Raft) GetCommitIndex() int {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	return rf.commitIndex
 }

@@ -1,21 +1,25 @@
 package shardkv
 
-import "6.5840/shardctrler"
-import "6.5840/labrpc"
-import "testing"
-import "os"
+import (
+	"os"
+	"testing"
 
-// import "log"
-import crand "crypto/rand"
-import "math/big"
-import "math/rand"
-import "encoding/base64"
-import "sync"
-import "runtime"
-import "6.5840/raft"
-import "strconv"
-import "fmt"
-import "time"
+	"6.5840/labrpc"
+	"6.5840/shardctrler"
+
+	// import "log"
+	crand "crypto/rand"
+	"encoding/base64"
+	"fmt"
+	"math/big"
+	"math/rand"
+	"runtime"
+	"strconv"
+	"sync"
+	"time"
+
+	"6.5840/raft"
+)
 
 func randstring(n int) string {
 	b := make([]byte, 2*n)
@@ -93,17 +97,25 @@ func (cfg *config) cleanup() {
 	cfg.checkTimeout()
 }
 
-// check that no server's log is too big.
+// 检查没有服务器的日志太大。
 func (cfg *config) checklogs() {
+	// 遍历所有的组
 	for gi := 0; gi < cfg.ngroups; gi++ {
+		// 遍历每个组中的所有服务器
 		for i := 0; i < cfg.n; i++ {
+			// 获取当前服务器的 Raft 状态大小
 			raft := cfg.groups[gi].saved[i].RaftStateSize()
+			// 获取当前服务器的快照大小
 			snap := len(cfg.groups[gi].saved[i].ReadSnapshot())
+			// 如果 maxraftstate 大于等于 0 并且 Raft 状态大小超过了 maxraftstate 的 8 倍
 			if cfg.maxraftstate >= 0 && raft > 8*cfg.maxraftstate {
+				// 记录错误信息并终止测试
 				cfg.t.Fatalf("persister.RaftStateSize() %v, but maxraftstate %v",
 					raft, cfg.maxraftstate)
 			}
+			// 如果 maxraftstate 小于 0 并且快照大小大于 0
 			if cfg.maxraftstate < 0 && snap > 0 {
+				// 记录错误信息并终止测试
 				cfg.t.Fatalf("maxraftstate is -1, but snapshot is non-empty!")
 			}
 		}

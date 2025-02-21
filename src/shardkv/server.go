@@ -165,6 +165,7 @@ func (kv *ShardKV) applier() {
 				reply := new(CommandReply)
 				// type assert the command from the message.
 				command := message.Command.(Command)
+				DPrintf("{Node %v}{Group %v} applies command %v", kv.rf.GetId(), kv.gid, command)
 				switch command.CommandType {
 				case Operation:
 					// extract the operation data and apply the operation to the state machine
@@ -186,27 +187,30 @@ func (kv *ShardKV) applier() {
 					// apply empty shards to the state machine, to prevent the state machine from rolling back
 					reply = kv.applyEmptyShards()
 				}
-
+				DPrintf("{Node %v}{Group %v} applies command successfully,%v", kv.rf.GetId(), kv.gid, command)
 				// only notify the related channel for currentTerm's log when node is Leader
 				if currentTerm, isLeader := kv.rf.GetState(); isLeader && message.CommandTerm == currentTerm {
 					notifyChan := kv.getNotifyChan(message.CommandIndex)
+					DPrintf("{Node %v}{Group %v} notifies the related channel for currentTerm's log %v", kv.rf.GetId(), kv.gid, message)
 					notifyChan <- reply
+					DPrintf("{Node %v}{Group %v} notifies the related channel for currentTerm's log %v successfully", kv.rf.GetId(), kv.gid, message)
 				}
-
 				// take snapshot if needed
 				if kv.needSnapshot() {
 					kv.takeSnapshot(message.CommandIndex)
 				}
+				DPrintf("{node %v}{group %v} unlock", kv.rf.GetId(), kv.gid)
 				kv.mu.Unlock()
 			} else if message.SnapshotValid {
 				// restore the state machine from the snapshot
-				// kv.mu.Lock()
-				// if kv.rf.CondInstallSnapshot(message.SnapshotTerm, message.SnapshotIndex, message.Snapshot) {
-				// 	kv.restoreSnapshot(message.Snapshot)
-				// 	kv.lastApplied = message.SnapshotIndex
-				// }
-				// kv.mu.Unlock()
-				DPrintf("TODO(): message.SnapshotValid\n")
+				kv.mu.Lock()
+				// DPrintf("{Node %v}{Group %v} tries to restore state machine from snapshot %v", kv.rf.GetId(), kv.gid, message)
+				kv.restoreSnapshot(message.Snapshot)
+				DPrintf("{Node %v}{Group %v} restores state machine from snapshot %v successfully", kv.rf.GetId(), kv.gid, message)
+				kv.lastApplied = message.SnapshotIndex
+				// DPrintf("{Node %v}{Group %v} unlock", kv.rf.GetId(), kv.gid)
+				kv.mu.Unlock()
+				// DPrintf("TODO(): message.SnapshotValid\n")
 			} else {
 				panic(fmt.Sprintf("{Node %v}{Group %v} invalid apply message %v", kv.rf.GetId(), kv.gid, message))
 			}
@@ -636,6 +640,6 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 	go kv.Monitor(kv.gcAction, GCMonitorTimeout)                               // Monitor garbage collection of old shard data.
 	go kv.Monitor(kv.checkEntryInCurrentTermAction, EmptyEntryDetectorTimeout) // Monitor Raft log entries in the current term.
 
-	DPrintf("{Node %v}{Group %v} started", kv.rf.GetId(), kv.gid)
+	DPrintf("{Node %v}{Group %v} started with lastApplied = %d,commitIndex = %d", kv.rf.GetId(), kv.gid, kv.lastApplied, kv.rf.GetCommitIndex())
 	return kv
 }

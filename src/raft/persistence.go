@@ -2,6 +2,7 @@ package raft
 
 import (
 	"bytes"
+	"log"
 
 	"6.5840/labgob"
 )
@@ -16,6 +17,11 @@ import (
 func (rf *Raft) persist() {
 	// Your code here (3C).
 	// Example:
+	raftstate := rf.encodeState()
+	rf.persister.Save(raftstate, rf.snapShot)
+	// rf.persister.Save(raftstate, nil)
+}
+func (rf *Raft) encodeState() []byte {
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
 	// 3C
@@ -26,10 +32,7 @@ func (rf *Raft) persist() {
 	// 3D
 	e.Encode(rf.lastIncludedIndex)
 	e.Encode(rf.lastIncludedTerm)
-
-	raftstate := w.Bytes()
-	rf.persister.Save(raftstate, rf.snapShot)
-	// rf.persister.Save(raftstate, nil)
+	return w.Bytes()
 }
 
 // restore previously persisted state.
@@ -100,11 +103,16 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 		DPrintf("Server %d ignore snapshot request, index = %v, lastIncludedIndex = %v, commitIndex = %v\n", rf.me, index, rf.lastIncludedIndex, rf.commitIndex)
 		return
 	}
+	// 不应该出现的奇怪代码，但是出现了，目前先直接return
+	// 我们现在直接return，因为这是一个不合法的snapshot
+	if rf.RealLogIdx(index) > len(rf.log) {
+		log.Printf("Server %d log length %v, index %v,rf.lastIncludedIndex %d\n", rf.me, len(rf.log), index, rf.lastIncludedIndex)
+		return
+	}
 	//DPrintf("Server %d receive snapshot request, index = %v, lastIncludedIndex = %v, commitIndex = %v\n", rf.me, index, rf.lastIncludedIndex, rf.commitIndex)
 	// 更新snapshot,到这一步我们就认为snapshot是合法的了
 	rf.snapShot = snapshot
 	rf.lastIncludedTerm = rf.log[rf.RealLogIdx(index)].Term
-
 	// 截断log
 	rf.log = rf.log[rf.RealLogIdx(index):] //index位置的log被存放在索引0处
 	rf.lastIncludedIndex = index
@@ -113,4 +121,33 @@ func (rf *Raft) Snapshot(index int, snapshot []byte) {
 	}
 	DPrintf("Snapshot(): now server %d lastIncludedIndex = %v, lastIncludedTerm = %v\n", rf.me, rf.lastIncludedIndex, rf.lastIncludedTerm)
 	rf.persist()
+}
+
+// // 被上层调用, 用于安装leader发送过来的snapshot
+func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
+	rf.mu.Lock()
+	defer func() {
+		rf.mu.Unlock()
+		// log.Printf("Server %d unlock\n", rf.me)
+	}()
+	// outdated snapshot
+	if lastIncludedIndex <= rf.commitIndex {
+		// log.Printf("{Node %v} rejects outdated snapshot with lastIncludeIndex %v as current commitIndex %v is larger in term %v", rf.me, lastIncludedIndex, rf.commitIndex, rf.currentTerm)
+		return false
+	}
+	// need dummy entry at index 0
+	if lastIncludedIndex > rf.VirtualLogIdx(len(rf.log)) {
+		rf.log = make([]LogEntry, 1)
+	} else {
+		rf.log = shrinkEntries(rf.log[lastIncludedIndex-rf.lastIncludedIndex:])
+		rf.log[0].Command = nil
+	}
+	rf.log[0].Term = lastIncludedTerm
+	rf.commitIndex, rf.lastApplied = lastIncludedIndex, lastIncludedIndex
+	// log.Printf("{Node %v} prepares to Save", rf.me)
+	rf.persister.Save(rf.encodeState(), snapshot)
+	// log.Printf("{Node %v} Save done", rf.me)
+
+	DPrintf("{Node %v}'s state is {state %v,term %v,commitIndex %v,lastApplied %v,firstLog %v,lastLog %v} after accepting the snapshot which lastIncludedTerm is %v, lastIncludedIndex is %v", rf.me, rf.state, rf.currentTerm, rf.commitIndex, rf.lastApplied, rf.log[0], rf.getLastLog(), lastIncludedTerm, lastIncludedIndex)
+	return true
 }

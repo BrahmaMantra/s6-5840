@@ -1,6 +1,8 @@
 package raft
 
-import "math"
+import (
+	"math"
+)
 
 // return false if:
 // 1. 收到过期的prc回复
@@ -339,7 +341,13 @@ func (rf *Raft) InstallSnapshot(args *InstallSnapshotArgs, reply *InstallSnapsho
 	// }
 	reply.Term = rf.currentTerm
 	DPrintf("server %v InstallSnapshot: args.LastIncludedIndex= %v, lastIncludedIndex = %v,lastApplied = %d \n", rf.me, args.LastIncludedIndex, rf.lastIncludedIndex, rf.lastApplied)
-	rf.applyCh <- *msg
-	// DPrintf("InstallSnapshot(): server %d applyCh <- msg\n", rf.me)
+	go func() { rf.applyCh <- *msg }()
 	rf.persist()
+}
+func (rf *Raft) SnapshotNotOutDated(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
+	// if lastIncludedIndex <= rf.commitIndex {
+	// 	log.Printf("{Node %v} rejects outdated snapshot with lastIncludeIndex %v as current commitIndex %v is larger in term %v", rf.me, lastIncludedIndex, rf.commitIndex, rf.currentTerm)
+	// 	return false
+	// }
+	return true
 }

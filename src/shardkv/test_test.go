@@ -1,15 +1,19 @@
 package shardkv
 
-import "6.5840/porcupine"
-import "6.5840/models"
-import "testing"
-import "strconv"
-import "time"
-import "fmt"
-import "sync/atomic"
-import "sync"
-import "math/rand"
-import "io/ioutil"
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"strconv"
+	"sync"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	"6.5840/models"
+	"6.5840/porcupine"
+)
 
 const linearizabilityCheckTimeout = 1 * time.Second
 
@@ -322,6 +326,7 @@ func TestMissChange5B(t *testing.T) {
 	cfg.ShutdownServer(0, 0)
 	cfg.ShutdownServer(1, 0)
 	cfg.ShutdownServer(2, 0)
+	log.Printf("ShutdownServer 0\n")
 
 	cfg.join(2)
 	cfg.leave(1)
@@ -333,7 +338,7 @@ func TestMissChange5B(t *testing.T) {
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	log.Printf("shutdown 0 is ok\n")
 	cfg.join(1)
 
 	for i := 0; i < n; i++ {
@@ -346,37 +351,37 @@ func TestMissChange5B(t *testing.T) {
 	cfg.StartServer(0, 0)
 	cfg.StartServer(1, 0)
 	cfg.StartServer(2, 0)
-
+	log.Printf("StartServer 0\n")
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 		x := randstring(20)
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	log.Printf("StartServer is ok\n")
 	time.Sleep(2 * time.Second)
 
 	cfg.ShutdownServer(0, 1)
 	cfg.ShutdownServer(1, 1)
 	cfg.ShutdownServer(2, 1)
-
+	log.Printf("ShutdownServer 1\n")
 	cfg.join(0)
 	cfg.leave(2)
-
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 		x := randstring(20)
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	log.Printf("shutdown done 1 is ok\n")
 	cfg.StartServer(0, 1)
 	cfg.StartServer(1, 1)
 	cfg.StartServer(2, 1)
-
+	log.Printf("StartServer 1\n")
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 	}
+	log.Printf("StartServer is ok\n")
 
 	fmt.Printf("  ... Passed\n")
 }
